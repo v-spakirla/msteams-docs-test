@@ -5,7 +5,7 @@ ms.topic: article
 ms.localizationpriority: medium
 ms.author: anclear
 ms.owner: angovil
-ms.date: 03/11/2025
+ms.date: 08/23/2026
 ---
 # Format your agent messages
 
@@ -83,6 +83,14 @@ The following table provides a list of styles, which are supported on desktop, i
 | Hyperlink                 | ✔️ | ✔️ | ✔️ |
 | Image link                | ❌ | ❌ | ❌ |
 
+## Images in agent messages
+
+Your agent can include images in the messages that it sends, either as a message attachment or as an image element in a card.
+
+[!INCLUDE [gov-cloud-base64-images](~/includes/gov-cloud-base64-images.md)]
+
+For more information on the image formats, dimensions, and size limits that cards support, see [inline card images](../../task-modules-and-cards/cards/cards-reference.md#inline-card-images).
+
 ## AI-generated content messages
 
 AI labels, citations, feedback buttons, and sensitivity labels in your agent’s messages improve user engagement and foster transparency and trust.
@@ -104,3 +112,4 @@ For more information, see [agent messages with AI-generated content](format-ai-b
 - [Build agents for Teams](../what-are-bots.md)
 - [Adaptive Cards](../../task-modules-and-cards/what-are-cards.md#adaptive-cards)
 - [Format cards in Teams](../../task-modules-and-cards/cards/cards-format.md)
+- [Plan for government clouds](../../concepts/cloud-overview.md)

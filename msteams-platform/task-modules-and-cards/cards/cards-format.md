@@ -3,7 +3,7 @@ title: Format Text in Cards
 description: Learn about card text formatting with Markdown and HTML, how to design responsive Adaptive Cards, and other elements to create actionable Adaptive Cards.
 ms.localizationpriority: high
 ms.topic: reference
-ms.date: 06/10/2026
+ms.date: 08/23/2026
 ---
 
 # Format cards in Teams
@@ -26,6 +26,8 @@ Cards support formatting in the text property only, not in the title or subtitle
 Formatting support differs between card types. Rendering of the card can differ slightly between the desktop and the mobile Microsoft Teams clients, and Teams in the desktop browser.
 
 You can include an inline image with any Teams card. Supported image formats are .png, .jpg, or .gif formats. Keep the dimensions within 1024 x 1024 pixels and file size less than 1 MB. Animated .gif images aren't supported. For more information, see [types of cards](./cards-reference.md#inline-card-images).
+
+[!INCLUDE [gov-cloud-base64-images](~/includes/gov-cloud-base64-images.md)]
 
 You can format Adaptive Cards and connector cards for Microsoft 365 Groups with Markdown that include certain supported styles.
 

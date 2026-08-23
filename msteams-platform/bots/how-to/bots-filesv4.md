@@ -1,7 +1,7 @@
 ---
 title: Send and Receive Files
 description: Learn how to create agents that send and receive files using Microsoft Graph APIs and Teams SDK for personal, channel, and groupchat scopes. Code samples (.NET, Node.js, Python).
-ms.date: 07/27/2026
+ms.date: 08/23/2026
 author: nickwalkmsft
 ms.author: nickwalk
 ms.reviewer: nickwalk
@@ -193,6 +193,8 @@ The following table describes the content properties of the attachment:
 ### Fetch inline images from message
 
 Fetch inline images that are part of the message using the `OnMessage` handler. The Teams SDK handles authentication automatically, so you can access attachment content URLs directly from the activity context.
+
+[!INCLUDE [gov-cloud-base64-images](~/includes/gov-cloud-base64-images.md)]
 
 :::image type="content" source="../../assets/images/bots/inline-image.png" alt-text="Inline image"border="true":::
 

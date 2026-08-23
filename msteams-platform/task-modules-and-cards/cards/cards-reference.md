@@ -3,7 +3,7 @@ title: Create & Explore Card Types in Teams
 description: In this module, learn about cards and card actions available to bots in Teams, and how to create hero, thumbnail, and Adaptive Cards.
 ms.localizationpriority: high
 ms.topic: reference
-ms.date: 09/16/2024
+ms.date: 08/23/2026
 ---
 
 # Types of cards
@@ -82,6 +82,8 @@ You can go through some common properties that are applicable to all cards.
 ### Inline card images
 
 The card can contain an inline image by including a link to the publicly available image. For performance purposes, it's highly recommended you host the image on a public Content Delivery Network (CDN).
+
+[!INCLUDE [gov-cloud-base64-images](~/includes/gov-cloud-base64-images.md)]
 
 Images are scaled up or down in size to maintain the aspect ratio for covering the image area. Images are then cropped from center to achieve the appropriate aspect ratio for the card.
 

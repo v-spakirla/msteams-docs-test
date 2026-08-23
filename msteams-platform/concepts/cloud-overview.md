@@ -4,7 +4,7 @@ author: v-preethah
 description: Learn about the Teams features and capabilities available for Government Community Cloud (GCC), GCC High, and Department of Defense (DoD) environments. Get an overview on how to deploy Teams in government clouds.
 ms.topic: article
 ms.localizationpriority: high
-ms.date: 04/23/2026
+ms.date: 08/23/2026
 ---
 
 # Plan for government clouds
@@ -66,6 +66,57 @@ For more information on Graph API, see [Graph API for Government clouds](/graph/
 > * Third-party apps are turned off by default for GCC and aren't available for GCC High and DoD. To turn on third-party apps for GCC, see [manage org-wide app settings for Microsoft 365 Government](/microsoftteams/manage-apps).
 > * GCC High supports Incoming Webhooks only.
 
+### Images in agent messages and cards
+
+In GCC High and DoD environments, an agent must embed the images that it sends directly in the message as base64 encoded data. Images that are referenced by a URL, such as an image hosted on a web server or a content delivery network (CDN), aren't supported in these environments due to compliance requirements. This requirement applies to the images that an agent sends in messages, in message attachments, and in cards.
+
+To send an image from an agent in GCC High or DoD:
+
+1. Read the image bytes and encode them as a base64 string.
+1. Set the attachment's `contentUrl` to a data URI in the `data:<content-type>;base64,<encoded-image-data>` format.
+1. Send the attachment with the message.
+
+The following example shows an image attachment that is sent as base64 encoded data:
+
+```json
+{
+  "name": "image.png",
+  "contentType": "image/png",
+  "contentUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+}
+```
+
+The following code shows how an agent sends a base64 encoded image:
+
+```csharp
+using Microsoft.Teams.Api;
+
+// Encode the image as base64 data.
+var imageData = Convert.ToBase64String(File.ReadAllBytes(filePath));
+
+var reply = new MessageActivity("Here's the image you requested.");
+reply.AddAttachment(new Attachment
+{
+    Name = "image.png",
+    ContentType = "image/png",
+    ContentUrl = $"data:image/png;base64,{imageData}",
+});
+
+await context.SendAsync(reply, cancellationToken);
+```
+
+To display an image in an Adaptive Card, set the `url` property of the `Image` element to the same data URI:
+
+```json
+{
+  "type": "Image",
+  "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+}
+```
+
+> [!NOTE]
+> The 100-KB agent message size limit doesn't include base64 encoded images. For more information, see [format your agent messages](~/bots/how-to/format-your-bot-messages.md).
+
 ### Plan to deploy Teams in government clouds
 
 To deploy Teams in GCC, GCC High, or DoD, you must purchase a suitable [Microsoft 365 Government plan](https://products.office.com/government/compare-office-365-government-plans). US federal, state, local or tribal government entity, or other entities that handle data subject to government regulations can opt for a government cloud service license. For more information, see [Teams for Government](/microsoftteams/expand-teams-across-your-org/teams-for-government-landing-page).
@@ -84,6 +135,7 @@ Here are few pointers to consider while connecting with third-party services fro
 
 ## See also
 
+* [Format your agent messages](~/bots/how-to/format-your-bot-messages.md)
 * [Deployment overview](/microsoftteams/deploy-overview)
 * [Plan for governance in Teams](/microsoftteams/plan-teams-governance)
 * [Customer eligibility](/office365/servicedescriptions/office-365-platform-service-description/office-365-us-government/office-365-us-government)
