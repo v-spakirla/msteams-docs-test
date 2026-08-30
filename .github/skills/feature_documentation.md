@@ -1,7 +1,7 @@
 ---
 name: document-feature
-description: End-to-end AI-automated documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the task as a new feature or a documentation update, then writes/updates the article, TOC placement, headings, screenshots and accessible alt text, links, code snippets, zone pivots, and See also sections, and opens a pull request for human review.
-version: 2.1.0
+description: End-to-end AI-assisted documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the task as a new feature or a documentation update, then writes/updates the article, TOC placement, headings, images, links, code snippets, zone pivots, and See also sections. Asks the user whenever anything is unclear and always asks for confirmation before opening a pull request.
+version: 2.2.0
 ---
 
 # Document Feature — Teams Platform Documentation Skill
@@ -10,11 +10,21 @@ GitHub Copilot skill that performs **end-to-end, AI-enabled documentation automa
 
 ## Quick Summary
 
-Run `/document-feature <source>` where `<source>` is a **webpage URL, a file path, or a folder path**. The skill extracts context from that source, decides whether the work is a **new feature** doc or a **documentation update**, finds the right place in the TOC, restructures headings and lists, audits images/GIFs, repairs inbound and anchor links across the whole repo, validates code snippets against the Teams SDK docs, reworks zone pivots, refreshes the **See also** section, adds notes/examples/tables, and creates a PR.
+Run `/document-feature <source>` where `<source>` is a **webpage URL, a file path, or a folder path**. The skill extracts context from that source, decides whether the work is a **new feature** doc or a **documentation update**, finds the right place in the TOC, restructures headings and lists, audits images/GIFs, repairs inbound and anchor links across the whole repo, validates code snippets against the Teams SDK docs, reworks zone pivots, refreshes the **See also** section, and adds notes/examples/tables. It asks you whenever something is unclear, then prints a full pre-PR summary and creates the PR only after you confirm.
 
-## IMPORTANT: Fully automated with PR for review
+## IMPORTANT: Ask the user whenever anything is unclear
 
-**Do NOT ask the user questions mid-run. Do NOT pause for confirmation.** Execute every phase in order and create a pull request at the end. If a step cannot be completed, log a warning, flag it in the PR body, and continue.
+**Always ask the user for clarification or confirmation when in doubt.** Never guess, never assume, and never invent context to keep the run moving. Execute the phases in order, but stop and ask whenever a decision is ambiguous, information is missing, or an input cannot be reached.
+
+**Ask-the-user contract:**
+
+- **Ask, don't assume.** If the context, the intent, the impacted articles, the target folder, the TOC placement, the audience, or the scope is not obvious, ask the user before proceeding.
+- **Ask when inputs are unavailable.** If a source link is unreachable, gated, or requires sign-in; if a file or folder path does not exist or is empty; if a chat, thread, work item, or conversation cannot be reached or read — stop and ask the user for an alternate source, an export, or pasted content. Do not fabricate the missing context.
+- **Ask when more than one answer is reasonable.** If the task could be a new feature or a doc update, if several existing articles could be the one to update, or if multiple TOC parents are plausible, present the options and ask the user to choose.
+- **Ask before anything destructive or hard to reverse.** Deleting content, removing an image, moving or renaming a file, adding a redirect, removing a zone pivot, or changing another article — confirm first.
+- **Ask before creating the pull request.** The pre-PR summary in Phase 11 must be printed and explicitly confirmed by the user before any branch, commit, or PR is created.
+- **How to ask.** Ask one focused question at a time, state what you already know, offer concrete options with a recommended default, and wait for the answer. Never bundle several questions into one prompt.
+- **After asking.** Record the user's answer in the run context, apply it, and reflect the decision in the PR body.
 
 **Safety contract:**
 
@@ -57,16 +67,19 @@ Run `/document-feature <source>` where `<source>` is a **webpage URL, a file pat
 
 ### Phase 0: Ingest the Source and Extract Context
 
-1. **Resolve the source type** — link, file, or folder.
-   - **Link:** fetch the page. Follow one level of directly relevant in-page links (spec appendices, SDK reference pages). Capture headings, API names, parameters, code snippets, screenshots, and version/release information.
-   - **File:** read the whole file. For code files, extract public APIs, types, and usage patterns. For `.md`, extract structure and claims.
-   - **Folder:** enumerate recursively, skip binaries and build output, and read every relevant spec, README, sample, and manifest.
-2. **Build a context record** containing: feature name, capability summary, target audience, APIs/parameters/returns, code snippets by language, prerequisites, limitations, supported platforms/clients (Teams, Outlook, Microsoft 365 Copilot), and any images provided.
+1. **Resolve the source type** — link, file, or folder. **If no source was provided, or the source type is ambiguous, ask the user for it before doing anything else.**
+   - **Link:** fetch the page. Follow one level of directly relevant in-page links (spec appendices, SDK reference pages). Capture headings, API names, parameters, code snippets, screenshots, and version/release information. **If the link is unreachable, gated, requires sign-in, or returns partial content, ask the user** to provide an alternate link, an export, or the pasted content — do not proceed on guesswork.
+   - **File:** read the whole file. For code files, extract public APIs, types, and usage patterns. For `.md`, extract structure and claims. **If the file is missing, unreadable, or in an unsupported format, ask the user** for a correct path or a readable version.
+   - **Folder:** enumerate recursively, skip binaries and build output, and read every relevant spec, README, sample, and manifest. **If the folder is empty, missing, or contains no recognizable context, ask the user** which files to use.
+   - **Chat, thread, work item, or conversation source:** if it cannot be reached or read, **ask the user** to paste the relevant content or point to an accessible copy.
+2. **Build a context record** containing: feature name, capability summary, target audience, APIs/parameters/returns, code snippets by language, prerequisites, limitations, supported platforms/clients (Teams, Outlook, Microsoft 365 Copilot), and any images provided. **If any of these is missing or unclear and it materially affects the article, ask the user rather than inferring it.**
 3. **Classify the task type:**
    - `new-feature` — the capability has no existing article in the repo.
    - `doc-update` — an article already covers this area and needs revision.
    - Decide by searching the repo for the feature name, API names, and close synonyms. If a strong match exists (title, headings, or API names overlap), choose `doc-update` and record the target file(s). Otherwise choose `new-feature`.
+   - **If the classification is not clear-cut — or if several articles could be the target — list the candidates and ask the user to confirm the task type and the impacted articles before continuing.**
 4. Print `📥 Source: <type> — <location>` and `🎯 Task type: <new-feature|doc-update>`.
+5. **Confirm the understanding.** Summarize the extracted context and the impacted article(s) in a few lines and ask the user to confirm it is correct before moving to Phase 1.
 
 ---
 
@@ -377,7 +390,40 @@ Print:
 
 ---
 
-### Phase 11: Create the Pull Request
+### Phase 11: Confirm, Then Create the Pull Request
+
+#### 11a. Print the pre-PR summary
+
+Before creating any branch, commit, or pull request, print the complete run summary exactly in this order:
+
+```
+📥 Source: <type> — <location>
+🎯 Task type: <new-feature|doc-update>
+📂 Target area: <folder>
+🧭 TOC placement: <parent > child path>
+✅ Conventions discovered
+✏️ Documentation written: <file-path>
+🧱 Structure normalized: <N> headings changed
+🖼️ Images: <kept> kept, <updated> flagged for update, <added> added, <removed> removed
+🔗 Links: <N> inbound checked, <A> fixed, <B> anchors repaired, <C> outbound fixed, <D> flagged
+💻 Code: <valid> valid, <fixed> updated, <removed> removed, <flagged> flagged
+```
+
+Then list, in full:
+
+- **Articles being updated** — every file that will be added, modified, moved, or deleted, with a one-line reason for each.
+- **Placement of the article** — for a `new-feature`, the exact file path and the TOC parent > child path it will be inserted under.
+- **Open questions and flagged items** — anything still unverified, placeholder, or ambiguous.
+
+#### 11b. Ask for confirmation
+
+**Ask the user to confirm the list of articles being updated and the placement of the new article. Do not create a branch, commit, or pull request until the user explicitly confirms.**
+
+- If the user asks for changes, apply them, re-run the affected phases, print the summary again, and ask again.
+- If the user declines, stop and leave the working tree as is.
+- If any part of the summary is uncertain, ask about it before asking for the final confirmation.
+
+#### 11c. Create the pull request (only after confirmation)
 
 1. **Create a feature branch** from `main`.
 2. **Commit all changes** with a descriptive message:
@@ -412,7 +458,7 @@ Print:
 3. **Complete examples** — copy-paste ready, never pseudo-code.
 4. **Document error cases** — common errors and how to handle them.
 5. **Respect scope** — document current behavior only; no speculation about future releases.
-6. **Ground every claim** — if it isn't in the source or SDK docs, don't state it; flag it instead.
+6. 6. **Ground every claim** — if it isn't in the source or SDK docs, don't state it; ask the user to confirm it, or flag it.
 7. **Match the repo** — when generic style guidance conflicts with the surrounding folder's conventions, follow the repo.
 8. **SEO** — titles, descriptions, headings, and `displayName` use terms developers actually search.
 
@@ -420,24 +466,29 @@ Print:
 
 ## Edge Cases and Error Handling
 
+**Rule: when something is not clear, ask the user.** Every situation below resolves by asking rather than guessing. Only proceed on your own when the user has answered, or when the user has explicitly told you to use your best judgment.
+
 | Situation | Behavior |
 | --- | --- |
-| Source link is unreachable or gated | Continue with any partial context; flag missing context prominently in the PR body |
-| Folder source contains unrelated files | Ignore binaries/build output; document which files were used as context |
-| Task type is ambiguous (new vs. update) | Prefer `doc-update` when any existing article overlaps; state the decision and the alternative in the PR body |
-| Feature area cannot be determined | Place in the closest matching folder and ask the reviewer in the PR body to confirm |
-| TOC insertion point unclear | Place at the end of the most relevant node and flag for reviewer |
-| Existing article conflicts with the source | Update to the source and show both versions in the PR body |
-| Heading rename breaks external (non-repo) anchors | Keep the old heading text as a bookmark or add a redirect note; flag it |
-| Broken inbound link points to a file that doesn't exist | Repair to the nearest correct target if unambiguous; otherwise flag |
-| Screenshot/GIF appears stale | Keep it in place, add `NEEDS-NEW-SCREENSHOT` to the PR body with the reason — never ship a blank image reference |
-| Image contains personal, customer, or tenant-identifying data | Don't commit the asset; keep the existing reference or add a placeholder, and flag it in the PR body as `NEEDS-SCRUBBED-SCREENSHOT` with what must be removed |
-| Complex diagram, chart, or flow has no long description | Convert the reference to `type="complex"`, draft the long description from the source context, and flag it for SME confirmation; never leave a complex visual with alt text alone |
-| Unsupported image file type (for example, a `.gif` not registered in `docfx.json`) | Don't add the reference; flag it in the PR body so a human either converts the asset to `.png`/`.jpg` or registers the type as a resource in `docfx.json` |
-| Code snippet can't be verified against SDK docs | Keep it, mark it `unverified`, and request SME confirmation in the PR body |
-| Zone pivot value not defined in the repo | Do not invent one; use non-pivoted content and flag the request in the PR body |
-| No code samples in the source | Write the structure with `<!-- TODO: Add code sample -->` and flag in the PR |
-| Feature uses deprecated branding | Auto-correct to current branding |
+| Source link is unreachable or gated | **Ask the user** for an accessible link, an export, or the pasted content. Do not proceed on partial context without the user's explicit go-ahead |
+| Source file or folder is missing, empty, or unreadable | **Ask the user** for the correct path or a readable copy before continuing |
+| Chat, thread, or work item cannot be reached | **Ask the user** to paste the relevant conversation or point to an accessible copy |
+| Folder source contains unrelated files | List what you plan to use and what you plan to ignore, and **ask the user** to confirm the selection |
+| Task type is ambiguous (new vs. update) | **Ask the user** to choose, showing the overlapping articles and your recommendation |
+| Impacted articles are unclear or there are several candidates | **Ask the user** which article(s) to update, listing every candidate with a one-line reason |
+| Feature area cannot be determined | **Ask the user** which folder the article belongs in, offering the closest matches |
+| TOC insertion point unclear | **Ask the user** to confirm the parent node and position, offering your recommended placement |
+| Existing article conflicts with the source | **Ask the user** which version is correct before overwriting, showing both versions side by side |
+| Heading rename breaks external (non-repo) anchors | **Ask the user** whether to keep the old heading as a bookmark, add a redirect note, or accept the break |
+| Broken inbound link points to a file that doesn't exist | Repair it only when the correct target is unambiguous; otherwise **ask the user** for the intended target |
+| Screenshot/GIF appears stale | **Ask the user** whether to keep, replace, or flag it. Never remove or blank an image reference without confirmation |
+| New images need to be added or an image must be removed | **Ask the user** to confirm the addition or removal and the placement before changing any asset |
+| Code snippet can't be verified against SDK docs | **Ask the user** to confirm the snippet or supply a verified one; if the user defers, keep it and mark it `unverified` for SME review |
+| No code samples in the source | **Ask the user** for samples or for permission to ship a `<!-- TODO: Add code sample -->` placeholder |
+| Zone pivot value not defined in the repo | Never invent one — **ask the user** whether to add the pivot definition or publish non-pivoted content |
+| A file must be moved, renamed, or deleted, or a redirect added | **Ask the user** for confirmation before making the change |
+| Branding, terminology, or product name is uncertain | Auto-correct only known deprecated names; if the correct current name is unclear, **ask the user** |
+| Anything else the skill cannot resolve with confidence | Stop, state precisely what is unclear and what you already know, offer options, and **ask the user** |
 
 ---
 
@@ -504,6 +555,10 @@ Print:
 
 ---
 
+## Decisions confirmed with the author
+
+<List every question asked during the run and the answer given — task type, impacted articles, target folder, TOC placement, image and deletion approvals, and the final pre-PR confirmation.>
+
 ## References
 
 Screenshot and accessibility rules in this skill are derived from the following. The first two are **Microsoft-internal** and are the **source of truth**; where this skill and those pages disagree, those pages win.
@@ -516,4 +571,4 @@ Screenshot and accessibility rules in this skill are derived from the following.
 
 ---
 
-*The skill is complete when the pull request is created. Do not ask follow-up questions.*
+*The skill is complete when the pull request is created — and the pull request is created only after the user confirms the pre-PR summary. Ask the user whenever anything is unclear at any point in the run.*
