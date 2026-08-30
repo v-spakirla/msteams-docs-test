@@ -1,7 +1,7 @@
 ---
 name: document-feature
-description: End-to-end AI-automated documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the task as a new feature or a documentation update, then writes/updates the article, TOC placement, headings, images, links, code snippets, zone pivots, and See also sections, and opens a pull request for human review.
-version: 2.0.0
+description: End-to-end AI-automated documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the task as a new feature or a documentation update, then writes/updates the article, TOC placement, headings, screenshots and accessible alt text, links, code snippets, zone pivots, and See also sections, and opens a pull request for human review.
+version: 2.1.0
 ---
 
 # Document Feature — Teams Platform Documentation Skill
@@ -24,12 +24,14 @@ Run `/document-feature <source>` where `<source>` is a **webpage URL, a file pat
 - All generated content must be factual and grounded in the extracted source context or the official Teams SDK documentation — never invent API behavior, parameters, or capabilities.
 - Never delete an image, GIF, or asset that is still referenced anywhere in the repo.
 - Never break an existing published URL; when a file must move, add a redirect entry instead of deleting.
+- Screenshots must never contain personal, customer, or tenant-identifying data — real names, email addresses, avatars, tenant/subscription/object IDs, tokens, keys, connection strings, phone numbers, or customer content. If an asset contains any of it, flag the asset in the PR body for human review instead of committing it.
 
 **Style contract:**
 
 - Follow Microsoft Learn documentation style: clear, concise, developer-focused.
 - Use second person ("you"). Present tense. Active voice. Short, scannable sentences.
 - Match the tone, structure, and formatting of neighboring articles in the same folder — the repo's own style always wins over generic guidance.
+- All visuals and their alt text must follow the Microsoft Learn screenshot and accessibility guidance defined in [Phase 5](#phase-5-audit-images-screenshots-and-gifs) — every meaningful image is captured, stored, referenced, and described according to those rules.
 
 ---
 
@@ -99,7 +101,7 @@ Run `/document-feature <source>` where `<source>` is a **webpage URL, a file pat
    - Frontmatter shape (`title`, `description`, `ms.topic`, `ms.localizationpriority`, `ms.date`, `author`, `ms.owner`, `zone_pivot_groups`).
    - Heading depth and naming patterns; sentence-case headings.
    - Use of includes, zone pivots, and tabbed content.
-   - Image referencing patterns (`~/assets/images/<area>/...`) and `:::image:::` usage.
+   - Image referencing patterns (`~/assets/images/<area>/...`) and `:::image:::` usage — capture the folder's alt-text style (phrasing, length, whether screenshots start with `Screenshot of`) and which `:::image:::` attributes the folder uses (`border`, `loc-scope`, `lightbox`).
    - Cross-reference style (relative `.md` paths with anchors, Learn absolute URLs for non-repo content).
    - Callout syntax (`> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!CAUTION]`).
    - "See also" and "Next step" section conventions at the bottom of articles.
@@ -176,6 +178,10 @@ Print `🧱 Structure normalized: <N> headings changed`.
 
 ### Phase 5: Audit Images, Screenshots, and GIFs
 
+The authoritative source of truth for this phase is the Microsoft-internal guidance in [References](#references). The rules below are the checkable form the skill applies.
+
+#### Inventory and decide
+
 1. **Inventory every asset referenced** by the article (`:::image:::`, Markdown image syntax, and includes).
 2. For each asset, decide:
    - **Keep** — still accurate for the documented behavior and current UI.
@@ -183,9 +189,85 @@ Print `🧱 Structure normalized: <N> headings changed`.
    - **Add** — a step or concept that the source describes visually has no supporting visual; add a placeholder reference with descriptive alt text and flag it.
    - **Remove** — the asset documents removed behavior; remove the reference (and the file only if nothing else in the repo references it).
 3. **Validate every asset path resolves** to a file under `msteams-platform/assets/images/<area>/`.
-4. **Validate alt text** exists, is descriptive, and is not a duplicate of the caption.
-5. **GIFs** — confirm the animation still matches the described flow; if the flow changed, flag for re-recording.
-6. If the source provided new images, place them under `msteams-platform/assets/images/<area>/` using the folder's naming convention and reference them with `:::image type="content" source="~/assets/images/<area>/<file>" alt-text="<description>":::`.
+4. **GIFs** — confirm the animation still matches the described flow; if the flow changed, flag for re-recording.
+
+#### When to use a visual at all
+
+1. Use a screenshot only when it **adds information the text can't convey** — an ambiguous UI location, a visual result, or a layout that words alone don't pin down.
+2. Don't screenshot something a sentence or a code block already explains.
+3. **Never screenshot code, terminal output, JSON, or a manifest.** Use a fenced code block instead, so the content stays copyable, searchable, localizable, and accessible to screen readers.
+4. Prefer a **numbered procedure** over a series of near-identical screenshots; one screenshot of the decisive step beats six of the same dialog.
+
+#### Capturing a screenshot
+
+1. **Crop tightly** to the relevant UI region. Exclude the desktop, browser chrome, unrelated panes, and empty space.
+2. **Capture at 100% scale / standard DPI** so UI text is legible without zooming.
+3. Use the **default (light) theme** unless the article is specifically about theming, and stay consistent within an article.
+4. **Scrub all sensitive and personal data before committing** — real names, email addresses, avatars, tenant/subscription/object IDs, tokens, keys, connection strings, phone numbers, and customer data. Use fictitious sample data.
+5. Show the **current, shipping UI** and current branding and product names.
+6. If a region must be called out, use a **single consistent annotation style** (for example, a red rectangle), and still describe the callout in the surrounding text. Never rely on the annotation — or on color — alone to carry meaning.
+
+#### Saving and storing
+
+1. **File type:** `.png` for UI screenshots, `.jpg` for photographic content, `.gif` only for short animated flows. Learn supports `.jpg` and `.png` by default; any other type must be registered as a resource in `docfx.json`.
+2. **Keep files small** and optimize before committing. If an asset is unusually large, flag it for human review rather than committing a bloated file.
+3. **Location:** store assets under `msteams-platform/assets/images/<area>/`, following the neighboring folder's naming convention.
+4. **File names:** descriptive kebab-case that says what the image shows — never `image1.png`.
+5. **Don't store images in an `/includes` folder** — that folder is excluded from the build. Put them in the associated media/assets folder instead.
+6. **Don't share one media file across multiple includes or articles**; give each its own asset.
+
+#### Referencing in Markdown
+
+Prefer the Learn `:::image:::` extension over basic Markdown image syntax.
+
+- **Standard image** — `source` and `alt-text` are both **required** for `type="content"`:
+
+  ```md
+  :::image type="content" source="~/assets/images/<area>/<file>.png" alt-text="<alt text>":::
+  ```
+
+- **Complex image** (diagram, chart, architecture, or flow) — `source`, `alt-text`, the long description, and the `:::image-end:::` closing tag are all required:
+
+  ```md
+  :::image type="complex" source="~/assets/images/<area>/<file>.png" alt-text="<short alt text>":::
+     <Long description: the data, relationships, or sequence the diagram conveys, in full sentences.>
+  :::image-end:::
+  ```
+
+- **Decorative icon** — `alt-text` must **not** be specified for icons:
+
+  ```md
+  :::image type="icon" source="~/assets/images/<area>/<file>.png":::
+  ```
+
+- Use the **`border`** property instead of drawing a border into the image. It defaults to `true` for `content` and `complex`, and `false` for `icon`.
+- Set **`loc-scope`** when the image's localization scope differs from the article's — required for a screenshot of a product with a different localization scope.
+- If existing content uses basic Markdown `![alt](path)`, escape underscores in the alt text as `\_`, and never reuse the file name as the alt text.
+
+#### Alt-text requirements
+
+Apply these rules to **every** image reference the skill generates or touches:
+
+1. **Every meaningful image requires alt text.** Decorative images must not have it — reference them with `type="icon"`.
+2. **Keep it concise** — target roughly 125 characters or fewer.
+3. Describe the **purpose and meaning of the image in context**, not every pixel.
+4. Screenshots **may and should** begin with `Screenshot of ...` or `Screenshot that shows ...`. Do **not** begin with `Image of`, `Graphic of`, `Picture of`, or `Photo of`.
+5. **Don't duplicate** the caption or adjacent body text verbatim — alt text adds information, it doesn't repeat it.
+6. **Don't put the file name or path** in alt text.
+7. Write it as a **complete, punctuated phrase or sentence ending in a period**.
+8. **Include any text baked into the image** that carries meaning.
+9. **Complex visuals need a long description** via `type="complex"` — alt text alone is not sufficient for a diagram, chart, or flow.
+10. **Never rely on color alone** to convey meaning in a visual; the surrounding text must explain it too.
+11. **Videos and animated GIFs** need captions or a transcript, or an equivalent text description of the flow next to the embed.
+
+| | Example |
+| --- | --- |
+| ❌ DON'T | `alt-text="teams-app-settings-1.png"` |
+| ✅ DO | `alt-text="Screenshot of the Teams app settings pane with the Permissions tab selected."` |
+
+#### New images from the source
+
+If the source provided new images, place them under `msteams-platform/assets/images/<area>/` using the folder's naming convention, apply every rule above, and reference them with the `:::image:::` form that matches the image type.
 
 Print `🖼️ Images: <kept> kept, <updated> flagged for update, <added> added, <removed> removed`.
 
@@ -271,7 +353,11 @@ Print `🧭 Navigation updated`.
 1. **Frontmatter** — required fields present, `ms.date` current, `zone_pivot_groups` valid when pivots are used.
 2. **Structure** — one H1, no heading level skips, sections in the correct reading order.
 3. **Links** — all inbound, outbound, anchor, include, and TOC links resolve.
-4. **Images** — all paths resolve, all have alt text, flagged items listed.
+4. **Images** — all paths resolve, all flagged items listed, and every reference passes the Phase 5 rules:
+   - `type="content"` has both `source` and `alt-text`; `type="icon"` has **no** `alt-text`; `type="complex"` has a long description **and** a `:::image-end:::` closing tag.
+   - Alt text is roughly 125 characters or fewer, ends in a period, doesn't repeat the caption or contain the file name, and — for screenshots — starts with `Screenshot of` / `Screenshot that shows` and never with `Image of`, `Graphic of`, `Picture of`, or `Photo of`.
+   - File types are valid (`.png`, `.jpg`, or a type registered in `docfx.json`) and files live under `msteams-platform/assets/images/<area>/`, not in an `/includes` folder.
+   - No screenshot contains personal, customer, or tenant-identifying data.
 5. **Code** — all fences have languages, tab sets complete, SDK-verified.
 6. **Style** — no first person, sentence-case headings, consistent list punctuation, active voice.
 7. **Branding** — current product names throughout.
@@ -345,6 +431,9 @@ Print:
 | Heading rename breaks external (non-repo) anchors | Keep the old heading text as a bookmark or add a redirect note; flag it |
 | Broken inbound link points to a file that doesn't exist | Repair to the nearest correct target if unambiguous; otherwise flag |
 | Screenshot/GIF appears stale | Keep it in place, add `NEEDS-NEW-SCREENSHOT` to the PR body with the reason — never ship a blank image reference |
+| Image contains personal, customer, or tenant-identifying data | Don't commit the asset; keep the existing reference or add a placeholder, and flag it in the PR body as `NEEDS-SCRUBBED-SCREENSHOT` with what must be removed |
+| Complex diagram, chart, or flow has no long description | Convert the reference to `type="complex"`, draft the long description from the source context, and flag it for SME confirmation; never leave a complex visual with alt text alone |
+| Unsupported image file type (for example, a `.gif` not registered in `docfx.json`) | Don't add the reference; flag it in the PR body so a human either converts the asset to `.png`/`.jpg` or registers the type as a resource in `docfx.json` |
 | Code snippet can't be verified against SDK docs | Keep it, mark it `unverified`, and request SME confirmation in the PR body |
 | Zone pivot value not defined in the repo | Do not invent one; use non-pivoted content and flag the request in the PR body |
 | No code samples in the source | Write the structure with `<!-- TODO: Add code sample -->` and flag in the PR |
@@ -401,6 +490,8 @@ Print:
 - [ ] Code samples — snippets compile and run against the current SDK
 - [ ] Links — inbound, outbound, and anchor links all resolve
 - [ ] Images — screenshots and GIFs reflect current UI
+- [ ] Alt text — every meaningful image has concise, descriptive alt text; icons have none; complex visuals have a long description
+- [ ] Screenshot privacy — no personal, customer, or tenant-identifying data in any image
 - [ ] Zone pivots — every pivot renders with correct content
 - [ ] Branding — current product names used throughout
 - [ ] TOC placement — navigation entry is in the correct location
@@ -410,6 +501,18 @@ Print:
 
 <List every warning, placeholder, stale screenshot, unverified snippet, and ambiguity that needs human judgment.>
 ```
+
+---
+
+## References
+
+Screenshot and accessibility rules in this skill are derived from the following. The first two are **Microsoft-internal** and are the **source of truth**; where this skill and those pages disagree, those pages win.
+
+- [Create a screenshot](https://review.learn.microsoft.com/en-us/help/contribute/contribute-how-to-create-screenshot?branch=main) — Microsoft-internal
+- [Accessibility and multimedia: alt-text requirements for images](https://review.learn.microsoft.com/en-us/help/contribute/contribute-accessibility-multimedia?branch=main#alt-text-requirements-for-images) — Microsoft-internal
+- [Teams platform documentation contributor reference](https://learn.microsoft.com/en-us/microsoftteams/platform/resources/teams-contributor-reference)
+- [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/)
+- [Learn Markdown reference](https://learn.microsoft.com/en-us/contribute/markdown-reference)
 
 ---
 
