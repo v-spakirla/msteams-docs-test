@@ -3,13 +3,16 @@ title: Authenticating app users
 description: Learn about authentication methods that you can enable in Teams app, such as Single sign-on (SSO) and using third-party OAuth providers.
 ms.topic: article
 ms.localizationpriority: medium
-ms.date: 05/23/2022
+ms.date: 09/11/2026
 ---
 # Authenticate users in Microsoft Teams
 
 Authentication involves validating app users and securing both the app and its users against unauthorized access. You can select an appropriate authentication method for your app to validate users who want to use the Teams app.
 
 Choose to add authentication for your app in one of the following ways:
+
+* **Connect agent and tab authentication**:
+  Connected authentication links the external identity used to sign in to a Teams SDK agent or bot with the user's Microsoft identity. After the accounts are linked, an associated tab can use NAA to authenticate the user without another interactive sign-in. For more information, see [Connect agent and tab authentication](connected-authentication.md).
 
 * **Enable single sign-on (SSO) in a Teams app**:
   SSO within Teams is an authentication method that uses an app user's Teams identity to provide them with access to your app. A user who has logged into Teams doesn't need to log in again to your app within the Teams environment. With only a consent required from the app user, the Teams app retrieves access details for them from Microsoft Entra ID. After the app user has given consent, they can access the app even from other devices without having to be validated again. SSO is available for one-on-one and group scopes.
@@ -102,6 +105,7 @@ Enable authentication with SSO or third-party OAuth IdPs in your tab app, bot ap
 
 ## See also
 
+* [Connect agent and tab authentication](connected-authentication.md)
 * [Enable single sign-on in a tab app](../../tabs/how-to/authentication/tab-sso-overview.md)
 * [Microsoft Teams authentication flow for tabs](~/tabs/how-to/authentication/auth-flow-tab.md)
 * [Single sign-on support for bots](~/bots/how-to/authentication/auth-aad-sso-bots.md)
