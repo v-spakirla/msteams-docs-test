@@ -41,8 +41,6 @@ The following sequence uses Auth0 as an example external identity provider:
 | External identity provider | Authenticates the primary identity and maintains the linked identity record. |
 | Microsoft Entra ID and NAA | Authenticate the Teams user and provide a token for the requested scopes. |
 
-Connected authentication doesn't combine or expose access tokens across the agent and tab. Your backend links verified identity records. Continue to store and use each token only for its intended resource and audience.
-
 ## User experience
 
 Connected authentication gives the user one account-linking experience before they move from the agent to the tab:
@@ -75,8 +73,6 @@ You implement one coordinated authentication flow instead of independent onboard
 1. Verify both identities and link them in the external identity provider.
 1. Use the linked Microsoft identity for subsequent tab authentication.
 
-The agent and tab keep their existing token boundaries. Teams SDK retrieves the primary external-provider token for the agent, while MSAL acquires the Microsoft Entra token for the account-linking page. Your backend links identities; it doesn't pass an agent token to the tab.
-
 ## Prerequisites
 
 Before you implement connected authentication, you need:
@@ -91,7 +87,11 @@ Before you implement connected authentication, you need:
 
 For information about registering the trusted broker redirect and acquiring NAA tokens, see [Nested app authentication](nested-authentication.md).
 
-## Configure the app manifest
+## Implement connected authentication
+
+Implement connected authentication by configuring the App manifest and Teams SDK authentication, returning the account-linking URL, acquiring the Microsoft identity, and linking the verified accounts.
+
+### Configure the app manifest
 
 Use App manifest version 1.22 or later to add `nestedAppAuthInfo`. The following example uses version 1.23:
 
@@ -130,7 +130,7 @@ Ensure that:
 * `nestedAppAuthInfo[0].scopes` exactly matches the scopes requested by the account-linking page.
 * `validDomains` includes the host name for the account-linking URL.
 
-## Configure Teams SDK authentication
+### Configure Teams SDK authentication
 
 Set the external provider's OAuth connection as the default connection for the Teams SDK app:
 
@@ -167,7 +167,7 @@ app.event('signin', async ({ send }) => {
 });
 ```
 
-## Return the account-linking URL
+### Return the account-linking URL
 
 Handle `signin.verify-state` to exchange the state code for the external-provider token. Create a short-lived linking session that binds the Teams channel and user to the account-linking request. Return the session-specific account-linking URL in the invoke response:
 
@@ -243,9 +243,7 @@ app.on('signin.verify-state', async (context) => {
 > [!NOTE]
 > The Teams SDK TypeScript definitions currently declare the `signin/verifyState` response body as `void`. The example assigns the connected-authentication response payload after creating a typed invoke response.
 
-Expire linking sessions promptly and bind each session to the user and conversation that completed sign-in. Don't put access tokens in the account-linking URL.
-
-## Acquire the Microsoft identity with NAA
+### Acquire the Microsoft identity with NAA
 
 Initialize MSAL for NAA on the account-linking page. Attempt silent token acquisition first and use an interactive prompt only when required:
 
@@ -297,7 +295,7 @@ const naaAccessToken = await acquireNaaAccessToken({
 
 The app manifest values and runtime values for the client ID, redirect URI, and scopes must match.
 
-## Complete account linking
+### Complete account linking
 
 Your account-linking page and backend must complete these operations:
 
@@ -330,10 +328,7 @@ The following table shows the minimum app-hosted endpoints used by the sample:
 | `POST /api/token` | Exchanges the one-time code for the NAA access token used by the external provider's custom connection. |
 | `POST /api/linkAccounts` | Verifies the primary and secondary identities and links them in the identity provider. |
 
-> [!CAUTION]
-> Don't link accounts based only on unverified identifiers supplied by the client. Require recent authentication for both accounts, validate token signatures and claims, and protect every endpoint from cross-site request forgery, replay, and abuse.
-
-## Authentication at run time
+### Authentication at run time
 
 The user's linking state determines the authentication experience at run time:
 
@@ -348,7 +343,23 @@ The user's linking state determines the authentication experience at run time:
 
 After linking succeeds, the tab repeats the NAA-based authorization flow whenever it needs a token. If the Teams user has a valid Microsoft session, MSAL renews the token silently and the tab doesn't display another sign-in prompt.
 
-Don't infer that the agent is signed in from the tab's authentication state. Connected authentication doesn't support the reverse tab-to-agent direction.
+## Design guidelines and best practices
+
+Follow these guidelines when you design and deploy connected authentication:
+
+* **Keep the flow one-way**: Don't infer that the agent is signed in from the tab's authentication state. Connected authentication doesn't support the reverse tab-to-agent direction.
+* **Preserve token boundaries**: Teams SDK retrieves the primary external-provider token for the agent, while MSAL acquires the Microsoft Entra token for the account-linking page. Link verified identity records in your backend. Don't pass an agent token to the tab or expose tokens in URLs.
+* **Make account linking clear and optional**: Explain why the Microsoft account is requested and how linking affects the tab. Allow the user to continue or skip linking, and handle cancellation and failure.
+* **Correlate every attempt**: Bind each short-lived linking session to the user and conversation that completed sign-in. Use an integrity-protected, single-use correlation value across the NAA, PKCE, and linking operations.
+* **Require verified identities**: Don't link accounts based only on identifiers supplied by the client. Require recent authentication for both accounts and validate token issuer, audience, signature, tenant, expiration, nonce, and scopes.
+* **Protect authentication endpoints**: Validate the OAuth client at the token endpoint and add cross-site request forgery, replay, rate-limit, and abuse protections.
+* **Protect authentication data**: Store linking sessions and one-time codes in an encrypted, durable store with expiration and atomic consumption. Never log access tokens, ID tokens, authorization codes, cookies, or client secrets.
+* **Plan for account recovery**: Provide secure account unlinking and recovery, and handle revoked consent without treating the agent and tab as sharing one authentication session.
+* **Use production infrastructure**: Keep secrets in a managed secret store, rotate them regularly, and use a permanent app-owned HTTPS origin instead of a development tunnel.
+* **Complete security review**: Complete threat modeling, privacy review, consent review, and penetration testing before deployment.
+
+> [!CAUTION]
+> The sample implementation used for the code snippets stores linking data in memory and includes a single-pending-session fallback for local testing. Don't use either approach in a concurrent or multi-user deployment.
 
 ## Test connected authentication
 
@@ -376,21 +387,6 @@ Test at least the following scenarios:
 | Authorization fails after leaving the Teams webview | Don't depend on third-party cookies for correlation. Use an integrity-protected, single-use correlation value. |
 | Account linking returns `401` or `403` | Verify that the primary external-provider token has the audience and account-linking permissions required by the provider. |
 | The tab prompts again after successful linking | Verify that the secondary Microsoft identity is linked to the primary external account and that the tab uses the NAA connection. |
-
-## Production security requirements
-
-Before you deploy connected authentication:
-
-* Store linking sessions and one-time codes in an encrypted, durable store with expiration and atomic consumption.
-* Validate the OAuth client at the token endpoint.
-* Validate token issuer, audience, signature, tenant, expiration, nonce, and scopes.
-* Never log access tokens, ID tokens, authorization codes, cookies, or client secrets.
-* Keep secrets in a managed secret store and rotate them regularly.
-* Use a permanent app-owned HTTPS origin instead of a development tunnel.
-* Provide secure account unlinking and recovery.
-* Complete threat modeling, privacy review, consent review, and penetration testing.
-
-The sample implementation used for the code snippets in this article stores linking data in memory for local testing. Don't use its in-memory storage or single-pending-session fallback in a concurrent or multi-user deployment.
 
 ## Next step
 
