@@ -4,7 +4,7 @@ description: Learn how to analyze your app and agent usage metrics for your cust
 ms.localizationpriority: medium
 ms.topic: overview
 ms.owner: luywang
-ms.date: 05/08/2025
+ms.date: 09/16/2026
 ---
 
 # Analyze app and agent usage in Developer Portal
@@ -16,7 +16,9 @@ Whether you're tracking active users, retention rates, or usage patterns across 
 The app and agent usage for a given day is reflected within 24 to 48 hours, and usage data for the new apps or agents can take up to three to five days to reflect in the charts. Usage data isn’t shown for apps with fewer than five active users or for agents created using Copilot Studio agent builder.
 
 > [!NOTE]
-> Analytics in Developer Portal is only available for apps with custom-developed capabilities (bots, message extensions, tabs). Apps that are purely declarative agents or Copilot Studio agents won't have analytics available in Developer Portal.
+>
+> * Your app must include at least one custom-developed capability, such as a bot, message extension, or tab, for its usage to appear in Developer Portal. An app that contains only a declarative agent or only a Copilot Studio agent doesn't have analytics in Developer Portal.
+> * If your app includes a custom-developed capability along with a declarative agent, Developer Portal reports the declarative agent usage under the **Microsoft 365 Copilot Agent** capability. For more information, see [declarative agent usage](#declarative-agent-usage).
 
 # [Custom apps (New)](#tab/custom-apps-built-for-your-org)
 
@@ -184,7 +186,7 @@ The **Capability** tab shows the usage of individual app and agent capabilities 
    :::image type="content" source="../../assets/images/tdp/tdp-app-capability.png" alt-text="Screenshot shows app and agent capability usage in different host products of your published app in Developer Portal." lightbox="../../assets/images/tdp/tdp-app-capability.png":::
 
    > [!NOTE]
-   > **Microsoft 365 Copilot Agent** includes the usage of declarative agents only. The usage of custom engine agent is expected to be introduced later in Developer Portal.
+   > **Microsoft 365 Copilot Agent** includes the usage of declarative agents only. The usage of custom engine agent is expected to be introduced later in Developer Portal. For more information on how this usage is generated, see [declarative agent usage](#declarative-agent-usage).
 
 # [Custom apps (Deprecating)](#tab/custom-apps-deprecating)
 
@@ -438,12 +440,36 @@ The **Capability** tab shows the usage of individual app and agent capabilities 
 :::image type="content" source="../../assets/images/tdp/tdp-app-capability.png" alt-text="Screenshot shows the app and agent capability usage in different host products of your published app in Developer Portal." lightbox="../../assets/images/tdp/tdp-app-capability.png":::
 
 > [!NOTE]
-> **Microsoft 365 Copilot Agent** includes usage of declarative agents only. The usage of custom engine agent is expected to be introduced later in Developer Portal.
+> **Microsoft 365 Copilot Agent** includes usage of declarative agents only. The usage of custom engine agent is expected to be introduced later in Developer Portal. For more information on how this usage is generated, see [declarative agent usage](#declarative-agent-usage).
 
 ---
 
+## Declarative agent usage
+
+If your app includes both a custom-developed capability, such as a bot, and a declarative agent, Developer Portal reports the usage of each capability separately on the **Capability** tab.
+
+| Capability in your app | Reported under | How users generate the usage |
+| :-----------------------| :-------------------------| :------------------------------------------------------|
+| Bot, message extension, tab, or another custom-developed capability | The matching capability, such as **Bots** or **Message extension** | Users interact with the capability where it's installed, such as by sending a message to the bot in Teams. |
+| Declarative agent | **Microsoft 365 Copilot Agent** | Users select the agent in Microsoft 365 Copilot chat and send it a prompt. |
+
+A declarative agent doesn't run as a separate chat, tab, or message extension in Teams. Users engage with it from Microsoft 365 Copilot chat, where they select the agent from the right pane and then use its conversation starters or their own prompts. Installing the app makes the agent available to the user, but opening the app in Teams and chatting with its bot generates bot usage only.
+
+To generate declarative agent usage for an app that you're testing:
+
+1. Install the app that contains the declarative agent.
+1. Open Microsoft 365 Copilot chat, and then select your agent from the agent list in the right pane.
+1. Send one or more prompts to the agent.
+1. Wait for the data to reflect, and then check the **Microsoft 365 Copilot Agent** capability on the **Capability** tab.
+
+The usage is attributed to the host product where the user engaged with the agent, which you can view on the **Host product** tab.
+
+> [!IMPORTANT]
+> App and agent analytics is designed for aggregate usage analysis and isn't a functional test tool. Usage data isn't shown for apps with fewer than five active users, so an app that only you or a small test group uses doesn't show usage data for any capability, including declarative agents. To verify that your declarative agent works as expected, test it in Microsoft 365 Copilot chat instead.
+
 ## Known limitations
 
+* Usage data isn't shown for apps or agents with fewer than five active users. An app that you're testing in a development tenant usually doesn't meet this threshold, and its **Analytics** page stays empty.
 * The usage data for message extensions in Outlook and Outlook Add-in isn't available.
 * The usage data of the Outlook personal tab includes both personal tab and tab (meeting scenario) data.
 * The usage data for consumer apps isn't available.
@@ -451,5 +477,6 @@ The **Capability** tab shows the usage of individual app and agent capabilities 
 
 ## See also
 
+* [Declarative agents for Microsoft 365 Copilot](/microsoft-365-copilot/extensibility/overview-declarative-agent)
 * [Microsoft 365 Agents Toolkit overview](../../toolkit/agents-toolkit-fundamentals.md#quick-access-to-teams-developer-portal)
 * [Include a SaaS offer with your Microsoft Teams app](~/concepts/deploy-and-publish/appsource/prepare/include-saas-offer.md)
