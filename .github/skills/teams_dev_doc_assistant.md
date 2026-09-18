@@ -1,16 +1,16 @@
 ---
-name: document-feature
+name: Teams Developer Documentation Assistant
 description: End-to-end AI-assisted documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the documentation work as a Doc Feature or Doc Improvement, then writes/updates the article, TOC placement, headings, images, links, code snippets, zone pivots, developer announcements, RSS feed, and See also sections. Asks the user whenever anything is unclear and always asks for confirmation before opening a pull request.
 version: 2.3.0
 ---
 
-# Document Feature — Teams Platform Documentation Skill
+# Teams Developer Documentation Assistant — Teams Platform Documentation Skill
 
 GitHub Copilot skill that performs **end-to-end, AI-enabled documentation automation** for the [MicrosoftDocs/msteams-docs](https://github.com/MicrosoftDocs/msteams-docs) repository and opens a pull request for review.
 
 ## Quick Summary
 
-Run `/document-feature [source] [scope-hint]`. The skill first confirms whether the documentation work is a **Doc Feature** or **Doc Improvement**, then extracts context from the source, finds or proposes the right documentation home, restructures headings and lists, audits images/GIFs, repairs inbound and anchor links across the whole repo, validates code snippets against the Teams SDK docs, reworks zone pivots, refreshes the **See also** section, updates developer announcements and `feed.atom` when needed, and adds notes/examples/tables. It asks you whenever something is unclear, then prints a full pre-PR summary and creates the PR only after you confirm.
+Run `/Teams Developer Documentation Assistant [source] [scope-hint]`. The skill first confirms whether the documentation work is a **Doc Feature** or **Doc Improvement**, then extracts context from the source, finds or proposes the right documentation home, restructures headings and lists, audits images/GIFs, repairs inbound and anchor links across the whole repo, validates code snippets against the Teams SDK docs, reworks zone pivots, refreshes the **See also** section, updates developer announcements and `feed.atom` when needed, and adds notes/examples/tables. It asks you whenever something is unclear, then prints a full pre-PR summary and creates the PR only after you confirm.
 
 ## IMPORTANT: Ask the user whenever anything is unclear
 
@@ -61,7 +61,7 @@ Run `/document-feature [source] [scope-hint]`. The skill first confirms whether 
 ## Invocation
 
 ```text
-/document-feature [source] [scope-hint]
+/Teams Developer Documentation Assistant [source] [scope-hint]
 ```
 
 - **`source`** *(optional)* — the context source. If omitted, the skill asks whether this is a Doc Feature or Doc Improvement task and then asks for the source or update context. Source can be one of:
@@ -70,9 +70,9 @@ Run `/document-feature [source] [scope-hint]`. The skill first confirms whether 
   - **Folder** — a directory of specs, samples, or docs to be read recursively.
 - **`scope-hint`** *(optional)* — a target path or area hint (for example, `msteams-platform/bots/`).
 - Examples:
-  - `/document-feature https://learn.microsoft.com/... bot emoji reactions API`
-  - `/document-feature C:\specs\streaming-ux-spec.docx`
-  - `/document-feature C:\specs\agents-sdk\ msteams-platform/agents-in-teams/`
+  - `/Teams Developer Documentation Assistant https://learn.microsoft.com/... bot emoji reactions API`
+  - `/Teams Developer Documentation Assistant C:\specs\streaming-ux-spec.docx`
+  - `/Teams Developer Documentation Assistant C:\specs\agents-sdk\ msteams-platform/agents-in-teams/`
 
 ---
 
