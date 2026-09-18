@@ -1,7 +1,7 @@
 ---
 name: document-feature
 description: End-to-end AI-assisted documentation for the msteams-docs repository. Ingests context from a link, file, or folder, classifies the documentation work as a Doc Feature or Doc Improvement, then writes/updates the article, TOC placement, headings, images, links, code snippets, zone pivots, developer announcements, RSS feed, and See also sections. Asks the user whenever anything is unclear and always asks for confirmation before opening a pull request.
-version: 2.2.0
+version: 2.3.0
 ---
 
 # Document Feature — Teams Platform Documentation Skill
@@ -60,7 +60,7 @@ Run `/document-feature [source] [scope-hint]`. The skill first confirms whether 
 
 ## Invocation
 
-```
+```text
 /document-feature [source] [scope-hint]
 ```
 
@@ -207,7 +207,7 @@ zone_pivot_groups: <group-id, only if pivots are used>
    - **Introduction** — 2-3 sentences: what the feature is in familiar developer terms, who it's for, why it matters, and the recognizable scenario it supports.
    - **Prerequisites** — bulleted list, when applicable.
    - **User experience** — what users see, do, and expect when developers implement the feature.
-   - **Developer experience** — the end-to-end implementation flow. Order the list to match the subsections under `Implement <feature name>`.
+   - **Developer experience** — the end-to-end implementation flow. Order the list to match the subsections under `Implement <feature name>`, one list item per subsection, in the same sequence.
    - **Implement `<feature name>`** — compile all implementation instructions under this single section. Every implementation topic must be a subsection of this heading.
    - **Handle errors** — include an error-code table when the source or SDK docs provide errors. Use columns: `Status code`, `Error code`, `Description`, and `Developer action`. Include known HTTP 400, 401, 403, and service-specific errors when applicable.
    - **Code sample** — add a placeholder section for full sample links. Use a table with `Sample name`, `Description`, and `TypeScript` columns until more language links are available.
@@ -215,11 +215,34 @@ zone_pivot_groups: <group-id, only if pivots are used>
    - **Limitations and known issues** — prerequisites, assumptions, edge cases, common misconceptions, preview limits, and failure modes.
    - **Next step** — the single logical follow-on article.
    - **See also** — related references (see Phase 8).
-3. **Explain implementation code snippets** directly under each code block:
+3. **Use these table shapes** for the `Handle errors` and `Code sample` sections so every feature article is consistent.
+
+   Error-code table:
+
+   ```markdown
+   | Status code | Error code | Description | Developer action |
+   | --- | --- | --- | --- |
+   | HTTP 400 | `<Error code>` | <What the service rejected and why.> | <What the developer must change in the request or configuration.> |
+   | HTTP 401 | `<Error code>` | <Cause of the failed authentication.> | <How to re-authenticate, refresh, or reissue the credential.> |
+   | HTTP 403 | `<Error code>` | <Cause of the denied authorization.> | <Permission, scope, or consent the developer must grant.> |
+   ```
+
+   Keep one row per error the source or SDK docs actually document. Order rows by status code, list the service-specific errors after the HTTP status codes, and write every `Developer action` as a concrete step the developer can take — not a restatement of the description. If the source documents no errors, add the section with a `<!-- TODO: Add error codes -->` placeholder and flag it in the PR body.
+
+   Code-sample table:
+
+   ```markdown
+   | Sample name | Description | TypeScript |
+   | --- | --- | --- |
+   | <Sample title> | <What the sample demonstrates, in one line.> | [View](<link-to-sample>) |
+   ```
+
+   Add a language column only when a sample for that language exists. If no published sample exists yet, keep the section with a `<!-- TODO: Add code sample -->` placeholder and flag it in the PR body.
+4. **Explain implementation code snippets** directly under each code block:
    - Explain only the main properties, parameters, or values that developers must set. Don't explain every line or every element of the snippet.
    - Use bullet lists instead of parameter tables.
    - Each bullet must include a brief 6-10 word description, the value the developer assigns, and why it matters to the implementation flow. Pattern: `` `propertyName` — <6-10 word description>. Set this to `<value>` so <relevance to the process>.``
-4. **Review for redundancy before finalizing**. Check for repeated, overlapping, or conflicting information across sections. Report the redundancy findings to the user and don't apply broad restructuring or PR updates for redundancy cleanup until the user approves.
+5. **Review for redundancy before finalizing**. Check for repeated, overlapping, or conflicting information across sections. Report the redundancy findings to the user and don't apply broad restructuring or PR updates for redundancy cleanup until the user approves.
 
 #### For a Doc Improvement (`doc-improvement`)
 
@@ -228,13 +251,14 @@ zone_pivot_groups: <group-id, only if pivots are used>
 3. **Reconcile conflicts** — where the source contradicts the article, update to the source and flag the change in the PR body.
 4. **Remove or mark deprecated content** — move retired behavior into a clearly labeled note or delete it if the source confirms removal; never silently drop supported behavior. For requested removals, follow [Content removal and redirection](#content-removal-and-redirection-fte-request).
 5. **Fill quality gaps introduced by the update** — definition, intent, user experience, implementation examples, best practices, positioning, preview details, limitations, and misconceptions.
-6. **Update `ms.date`** to today's date.
+6. **Apply the feature-article template when the update documents a feature.** A Doc Improvement often adds or reworks feature content in an article that already exists. When it does, apply the same rules used for a Doc Feature — grouping implementation content under `Implement <feature name>`, ordering the `Developer experience` list to match those subsections, adding `Handle errors` and `Code sample` sections, moving design guidance into `Design guidelines and best practices`, and adding bullet-list snippet explanations. Restructuring an existing published article is not a surgical edit, so **show the user the proposed section order and ask for approval before applying it**. If the user declines, limit the change to the sections the source touches and note the structural gap in the PR body.
+7. **Update `ms.date`** to today's date.
 
 #### Content removal and redirection (FTE request)
 
 When an engineer asks to remove a document or part of a document from the doc set, confirm the removal scope with the user, then follow the matching path.
 
-**Removing an entire document**
+##### Removing an entire document
 
 1. Confirm with the user that the whole article should be removed.
 2. Remove the article's entry from `msteams-platform/TOC.yml`.
@@ -252,7 +276,7 @@ When an engineer asks to remove a document or part of a document from the doc se
 5. Delete the article file only after the TOC entry, inbound links, and redirect entry are handled.
 6. Check whether any images or includes used only by the removed article are now unreferenced, and ask the user before deleting them.
 
-**Removing part of a document**
+##### Removing part of a document
 
 1. Confirm with the user exactly which section, procedure, table, or code block should be removed.
 2. Remove that content from the article and keep the surrounding prose coherent.
@@ -269,16 +293,16 @@ Print `✏️ Documentation written: <file-path>`.
 
 1. **Enforce a single `#` H1**; no heading level skips (`##` → `####` is invalid).
 2. **Rewrite headings** to be sentence case, task-oriented, and scannable ("Send a streaming response", not "Streaming Responses Overview").
-3. **Reorder Doc Feature sections** into the recommended reading order: introduction → user experience → developer experience → implement `<feature name>` → handle errors → code sample → design guidelines and best practices → limitations → next step → see also. For Doc Improvement work, preserve the existing article structure unless the update requires restructuring.
+3. **Reorder feature sections** into the recommended reading order: introduction → prerequisites → user experience → developer experience → implement `<feature name>` → handle errors → code sample → design guidelines and best practices → limitations → next step → see also. Apply this order to every Doc Feature article. For Doc Improvement work, apply it only when the update documents a feature and the user approved the restructure in Phase 3; otherwise preserve the existing article structure.
 4. **Promote or demote sections** so that related content nests correctly under its parent concept.
 5. **Normalize lists:**
    - Convert prose paragraphs that enumerate items into bulleted lists.
    - Convert bulleted sequences that must be followed in order into numbered lists.
    - Keep list items parallel in grammar and consistent in end punctuation.
    - Convert two-dimensional bulleted content (item + attributes) into a table.
-6. **Validate Doc Feature structure**:
+6. **Validate feature article structure**:
    - All implementation content is under `Implement <feature name>`.
-   - Developer experience steps appear in the same order as the implementation subsections.
+   - Developer experience steps appear in the same order as the implementation subsections, one step per subsection.
    - Agent or app design guidance appears under `Design guidelines and best practices`.
    - Code snippet explanations use bullet lists, not parameter tables.
    - `Handle errors` and `Code sample` sections exist, even if they contain placeholders that are flagged for review.
@@ -399,7 +423,7 @@ Print `🖼️ Images: <kept> kept, <updated> flagged for update, <added> added,
 
 Print:
 
-```
+```text
 🔗 Links: <N> inbound checked, <A> fixed, <B> anchors repaired, <C> outbound fixed, <D> flagged
 ```
 
@@ -453,7 +477,7 @@ Print `📎 Pivots, notes, and See also updated`.
 1. **Insert the TOC entry** at the placement decided in Phase 1, with `name`, `href`, and `displayName` keywords.
 2. **Update `msteams-platform/developer-announcements.md`** when the work includes an externally relevant feature or platform update that should be announced. This can apply to either `doc-feature` or `doc-improvement` work. If it's unclear whether an announcement is needed, ask the user before editing the file. Add the entry near the top of the file with the newest announcement order and match the existing format:
 
-```
+```markdown
 ## <Released|Preview|Retiring>: <Feature or update title>
 
 *<Month Day, Year>*
@@ -492,19 +516,20 @@ Print `🧭 Navigation, announcements, and feed updated`.
    - File types are valid (`.png`, `.jpg`, or a type registered in `docfx.json`) and files live under `msteams-platform/assets/images/<area>/`, not in an `/includes` folder.
    - No screenshot contains personal, customer, or tenant-identifying data.
 5. **Code** — all fences have languages, tab sets complete, SDK-verified.
-6. **Feature article structure** — for Doc Feature work, verify the recommended section order, `Implement <feature name>` grouping, aligned Developer experience order, `Handle errors`, `Code sample`, and `Design guidelines and best practices` sections.
-7. **Snippet explanations** — implementation snippets have concise bullet-list explanations for main developer-controlled properties, parameters, and values.
-8. **Redundancy review** — repeated, overlapping, or conflicting content is reported to the user. Broad cleanup isn't applied unless approved.
-9. **Docs quality** — definition, intent, user experience, implementation, best practices, positioning, preview details, limitations, misconceptions, and edge cases are present or explicitly flagged for PM or engineering review.
-10. **Timeless language** — evergreen article content doesn't describe released capabilities as "new" or use launch-only messaging; point-in-time messaging is confined to `developer-announcements.md` and `feed.atom` except for preview, deprecation, migration, or legacy-compatibility context.
-11. **Style** — no first person, sentence-case headings, consistent list punctuation, active voice.
-12. **Branding** — current product names throughout.
-13. **Pivots** — every declared pivot has content; every pivot value is defined.
-14. **RSS feed** — if `developer-announcements.md` was updated, verify that `feed.atom` has exactly one new top entry for the announcement, the oldest entry was removed, the feed-level `<updated>` value matches the new post date with no timezone information, and the file is valid XML and a valid Atom feed.
+6. **Feature article structure** — verify the recommended section order, `Implement <feature name>` grouping, aligned Developer experience order, and the `Handle errors`, `Code sample`, and `Design guidelines and best practices` sections. Applies to every Doc Feature article and to any Doc Improvement where the user approved a feature-article restructure.
+7. **Error and sample tables** — `Handle errors` uses the `Status code` / `Error code` / `Description` / `Developer action` columns with actionable developer actions, and `Code sample` uses the `Sample name` / `Description` / `TypeScript` columns. Placeholders are flagged in the PR body.
+8. **Snippet explanations** — implementation snippets have concise bullet-list explanations for main developer-controlled properties, parameters, and values.
+9. **Redundancy review** — repeated, overlapping, or conflicting content is reported to the user. Broad cleanup isn't applied unless approved.
+10. **Docs quality** — definition, intent, user experience, implementation, best practices, positioning, preview details, limitations, misconceptions, and edge cases are present or explicitly flagged for PM or engineering review.
+11. **Timeless language** — evergreen article content doesn't describe released capabilities as "new" or use launch-only messaging; point-in-time messaging is confined to `developer-announcements.md` and `feed.atom` except for preview, deprecation, migration, or legacy-compatibility context.
+12. **Style** — no first person, sentence-case headings, consistent list punctuation, active voice.
+13. **Branding** — current product names throughout.
+14. **Pivots** — every declared pivot has content; every pivot value is defined.
+15. **RSS feed** — if `developer-announcements.md` was updated, verify that `feed.atom` has exactly one new top entry for the announcement, the oldest entry was removed, the feed-level `<updated>` value matches the new post date with no timezone information, and the file is valid XML and a valid Atom feed.
 
 Print:
 
-```
+```text
 ✅ Validation
   - Frontmatter: OK
   - Structure: OK
@@ -512,6 +537,7 @@ Print:
   - Images: <N> verified, <M> flagged
   - Code: <N> verified, <M> flagged
    - Feature article structure: <OK|not applicable|flagged>
+   - Error and sample tables: <OK|placeholder flagged|not applicable>
    - Snippet explanations: <OK|not applicable|flagged>
    - Redundancy review: <OK|approved changes pending|flagged>
    - Docs quality: <OK|flagged>
@@ -528,7 +554,7 @@ Print:
 
 Before creating any branch, commit, or pull request, print the complete run summary exactly in this order:
 
-```
+```text
 📥 Source: <type> — <location>
 🎯 Documentation work type: <doc-feature|doc-improvement>
 📂 Target area: <folder>
@@ -566,7 +592,7 @@ Then list, in full:
    - For `doc-improvement`, use `[Doc Improvement] <short update description>`.
 3. **Commit all changes** with a descriptive message:
 
-```
+```text
   docs: <add|update> <feature-name> documentation
 
    - <Added|Updated> <article>.md
@@ -580,7 +606,7 @@ Then list, in full:
 
 Print:
 
-```
+```text
 🚀 Pull request created: #<number>
    Title: <title>
    Files: <N> added, <M> modified
@@ -602,7 +628,7 @@ Print:
 9. **Provide opinionated guidance** — include best practices, design decisions, and standard conventions. Use **must** only for requirements; use **should** for recommendations.
 10. **Position the feature** — explain how it compares to related capabilities and add cross-links where developers would expect to discover it.
 11. **Keep evergreen content timeless** — avoid "new" launch language in articles unless documenting preview, deprecation, migration, or legacy compatibility.
-12. **Structure feature articles consistently** — use introduction → user experience → developer experience → implementation → handle errors → code sample → design guidance, adapted to repo conventions.
+12. **Structure feature articles consistently** — use introduction → prerequisites → user experience → developer experience → implement `<feature name>` → handle errors → code sample → design guidelines and best practices, adapted to repo conventions.
 13. **Explain code for implementation decisions** — after each implementation snippet, describe only the main developer-controlled values in concise bullets.
 14. **Review redundancy separately** — report repeated or overlapping content and get approval before broad cleanup.
 15. **Match the repo** — when generic style guidance conflicts with the surrounding folder's conventions, follow the repo.
@@ -645,6 +671,11 @@ Print:
 | New images need to be added or an image must be removed | **Ask the user** to confirm the addition or removal and the placement before changing any asset |
 | Code snippet can't be verified against SDK docs | **Ask the user** to confirm the snippet or supply a verified one; if the user defers, keep it and mark it `unverified` for SME review |
 | No code samples in the source | **Ask the user** for samples or for permission to ship a `<!-- TODO: Add code sample -->` placeholder |
+| Source documents no error codes for the feature | **Ask PM or engineering** for the error list; if it isn't available, keep `Handle errors` with a `<!-- TODO: Add error codes -->` placeholder and flag it in the PR body |
+| Error codes are known but the developer action for one isn't | **Ask PM or engineering** what a developer must do to resolve it. Never fill `Developer action` by restating the description |
+| No published code sample exists for the feature yet | Keep the `Code sample` section with the table header and a `<!-- TODO: Add code sample -->` placeholder, and flag it in the PR body |
+| A Doc Improvement needs the feature-article structure applied to a published article | **Ask the user** to approve the proposed section order before restructuring. If declined, edit only the affected sections and note the structural gap in the PR body |
+| Redundancy review finds overlapping content | Report the findings to the user and **ask for approval** before broad cleanup. Never restructure for redundancy alone without approval |
 | Zone pivot value not defined in the repo | Never invent one — **ask the user** whether to add the pivot definition or publish non-pivoted content |
 | A file must be moved, renamed, or deleted, or a redirect added | **Ask the user** for confirmation before making the change |
 | An entire article must be removed | **Ask the user** for the redirect target before deleting, then remove the TOC entry, scrub inbound links, and add the `.openpublishing.redirection.json` entry |
@@ -697,6 +728,7 @@ Print:
 | Anchor links | <B> repaired |
 | Code snippets | <valid> valid, <fixed> updated, <flagged> unverified |
 | Feature article structure | <OK|not applicable|flagged> |
+| Error and sample tables | <OK|placeholder flagged|not applicable> |
 | Snippet explanations | <OK|not applicable|flagged> |
 | Redundancy review | <OK|approved changes pending|flagged> |
 | Docs quality | <OK|flagged: definition/intent/UX/guidance/positioning/preview/limitations> |
@@ -712,6 +744,7 @@ Print:
 - [ ] Content accuracy — technical claims match the source spec and SDK docs
 - [ ] Docs quality — definition, intent, user experience, implementation, guidance, positioning, preview details, and limitations are complete or flagged
 - [ ] Feature article structure — implementation content is grouped under `Implement <feature name>`, with Developer experience ordered to match
+- [ ] Error and sample tables — `Handle errors` and `Code sample` use the required columns, and placeholders are flagged rather than left silent
 - [ ] Code explanation bullets — implementation snippets explain only the main developer-controlled properties, parameters, and values
 - [ ] Redundancy review — repeated, overlapping, or conflicting content was reported, and broad cleanup was approved before applying
 - [ ] Linked issue — PR body uses the correct `Fixes`, `Closes`, or `Related to` issue reference when the work came from a GitHub issue
