@@ -1,7 +1,7 @@
 ---
 title: SSO authentication for nested apps
 description: Learn how to implement, configure nested app authentication in Microsoft Teams app. Learn about the use case scenarios for nested app authentication.
-ms.date: 02/27/2026
+ms.date: 09/11/2026
 ms.topic: article
 author: vikasalmal
 ms.author: vikasalmal
@@ -276,6 +276,7 @@ This behavior is similar to the prefetch capability in the legacy Teams SSO mode
 
 ## See also
 
+* [Connect agent and tab authentication](connected-authentication.md)
 * [Microsoft identity platform and OAuth 2.0 On-Behalf-Of flow](/entra/identity-platform/v2-oauth2-on-behalf-of-flow)
 * [Caching in MSAL](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/caching.md)
 * [Introducing Nested App Authentication: An improved authentication protocol for your Teams app](https://devblogs.microsoft.com/microsoft365dev/introducing-nested-app-authentication-an-improved-authentication-protocol-for-your-teams-app/)
