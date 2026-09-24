@@ -64,8 +64,9 @@
     - name: Port a Slack Bolt app
       href: agents-in-teams/port-slack-bolt-javascript-app.md
       displayName: block kit, 
-    - name: Receive all chat messages
+    - name: Receive all channel and chat messages
       href: bots/how-to/conversations/channel-messages-for-bots-and-agents.md
+      displayName: RSC, resource-specific consent, ChannelMessage.Read.Group, ChatMessage.Read.Chat, without @mention
     - name: Send proactive messages
       href: bots/how-to/conversations/send-proactive-messages.md
       displayName: conversationId, send message, bot framework, notification,
