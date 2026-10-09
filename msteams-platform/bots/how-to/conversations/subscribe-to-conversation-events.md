@@ -5,6 +5,7 @@ ms.topic: article
 ms.localizationpriority: medium
 ms.author: nickwalk
 ms.date: 10/09/2026
+zone_pivot_groups: teams-sdk-languages
 ---
 
 # Conversation events for agents
@@ -95,7 +96,7 @@ In a team, member IDs received in the activity are unique to your agent. You can
 
 The following examples show the overall registration pattern. Add another handler with the event name from the preceding table instead of duplicating the complete activity-processing flow for each event.
 
-# [C#](#tab/csharp)
+::: zone pivot="teams-sdk-csharp"
 
 ```csharp
 app.OnChannelCreated(async context =>
@@ -120,7 +121,9 @@ app.OnMembersAdded(async context =>
 * `ChannelData.Channel` contains the channel that changed.
 * `MembersAdded` contains every member included in the update.
 
-# [TypeScript](#tab/typescript)
+::: zone-end
+
+::: zone pivot="teams-sdk-typescript"
 
 ```typescript
 app.on('channelCreated', async ({ activity, send }) => {
@@ -141,7 +144,9 @@ app.on('membersAdded', async ({ activity, send }) => {
 * `activity.channelData.channel` contains the channel that changed.
 * `activity.recipient.id` identifies the agent in membership updates.
 
-# [Python](#tab/python)
+::: zone-end
+
+::: zone pivot="teams-sdk-python"
 
 ```python
 @app.on_channel_created
@@ -162,7 +167,7 @@ async def handle_members_added(ctx: ActivityContext[ConversationUpdateActivity])
 * `ctx.activity.channel_data.channel` contains the channel that changed.
 * `ctx.activity.members_added` contains members included in the update.
 
----
+::: zone-end
 
 ### Handle message reaction events
 
