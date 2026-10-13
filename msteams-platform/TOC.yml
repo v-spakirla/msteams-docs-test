@@ -56,9 +56,12 @@
     - name: Agent slash commands
       href: agents-in-teams/agent-slash-commands.md
       displayName: private messages, ephemeral messages, targeted messages, message extension command, bot command, agent command, named command
-    - name: Send and receive files and inline images
+    - name: Send and receive files
       href: bots/how-to/bots-filesv4.md
-      displayName: receive files using bot, inline images
+      displayName: receive files using bot, file consent, OneDrive, SharePoint
+    - name: Send and receive inline images
+      href: bots/how-to/bots-inline-images.md
+      displayName: image attachment, hosted image, base64 image
   - name: How-tos
     items:
     - name: Port a Slack Bolt app
