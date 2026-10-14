@@ -92,9 +92,14 @@ In a team, member IDs received in the activity are unique to your agent. You can
 
 #### Register conversation event handlers
 
-The following examples show the overall registration pattern. Add another handler with the event name from the preceding table instead of duplicating the complete activity-processing flow for each event.
+Handler syntax and availability vary by SDK language. Select a language to view the handlers used in the example and the overall registration pattern.
 
 ::: zone pivot="teams-sdk-csharp"
+
+| Event | Handler syntax |
+| --- | --- |
+| Channel created | `app.OnChannelCreated(handler)` |
+| Members added | `app.OnMembersAdded(handler)` |
 
 ```csharp
 app.OnChannelCreated(async context =>
@@ -123,6 +128,11 @@ app.OnMembersAdded(async context =>
 
 ::: zone pivot="teams-sdk-typescript"
 
+| Event | Handler syntax |
+| --- | --- |
+| Channel created | `app.on('channelCreated', handler)` |
+| Members added | `app.on('membersAdded', handler)` |
+
 ```typescript
 app.on('channelCreated', async ({ activity, send }) => {
     const channel = activity.channelData.channel;
@@ -145,6 +155,11 @@ app.on('membersAdded', async ({ activity, send }) => {
 ::: zone-end
 
 ::: zone pivot="teams-sdk-python"
+
+| Event | Handler syntax |
+| --- | --- |
+| Channel created | `@app.on_channel_created` |
+| Members added | `@app.on_conversation_update` and check `members_added` |
 
 ```python
 @app.on_channel_created
