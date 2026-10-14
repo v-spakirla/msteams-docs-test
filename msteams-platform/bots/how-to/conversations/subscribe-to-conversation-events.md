@@ -53,21 +53,19 @@ Teams sends a `conversationUpdate` activity when:
 
 The following table lists the supported conversation update events:
 
-| Change | `channelData.eventType` | Teams SDK handler | Scope |
-| --- | --- | --- | --- |
-| Channel created | `channelCreated` | `OnChannelCreated`, `channelCreated`, or `on_channel_created` | Team |
-| Channel renamed | `channelRenamed` | `OnChannelRenamed`, `channelRenamed`, or `on_channel_renamed` | Team |
-| Channel deleted | `channelDeleted` | `OnChannelDeleted`, `channelDeleted`, or `on_channel_deleted` | Team |
-| Channel restored | `channelRestored` | `OnChannelRestored`, `channelRestored`, or `on_channel_restored` | Team |
-| Members added | `teamMemberAdded` in a team | `OnMembersAdded`, `membersAdded`, or `on_conversation_update` | All |
-| Members removed | `teamMemberRemoved` in a team | `OnMembersRemoved`, `membersRemoved`, or `on_conversation_update` | All |
-| Team renamed | `teamRenamed` | `OnTeamRenamed`, `teamRenamed`, or `on_team_renamed` | Team |
-| Team deleted | `teamDeleted` | `OnTeamDeleted`, `teamDeleted`, or `on_team_deleted` | Team |
-| Team restored | `teamRestored` | `OnTeamRestored`, `teamRestored`, or `on_team_restored` | Team |
-| Team archived | `teamArchived` | `OnTeamArchived`, `teamArchived`, or `on_team_archived` | Team |
-| Team unarchived | `teamUnarchived` | `OnTeamUnarchived`, `teamUnarchived`, or `on_team_unarchived` | Team |
-
-The handler names in the table are listed in C#, TypeScript, and Python order.
+| Event type | Description | Scope |
+| --- | --- | --- |
+| [`channelCreated`](#register-conversation-event-handlers) | A channel is created. | Team |
+| [`channelRenamed`](#register-conversation-event-handlers) | A channel is renamed. | Team |
+| [`channelDeleted`](#register-conversation-event-handlers) | A channel is deleted. | Team |
+| [`channelRestored`](#register-conversation-event-handlers) | A deleted channel is restored. | Team |
+| [`teamMemberAdded`](#read-conversation-update-data) | A member is added to a team. | Team |
+| [`teamMemberRemoved`](#read-conversation-update-data) | A member is removed from a team. | Team |
+| [`teamRenamed`](#register-conversation-event-handlers) | A team is renamed. | Team |
+| [`teamDeleted`](#register-conversation-event-handlers) | A team is deleted. | Team |
+| [`teamRestored`](#register-conversation-event-handlers) | A deleted team is restored. | Team |
+| [`teamArchived`](#register-conversation-event-handlers) | A team is archived. | Team |
+| [`teamUnarchived`](#register-conversation-event-handlers) | An archived team is restored. | Team |
 
 #### Read conversation update data
 
