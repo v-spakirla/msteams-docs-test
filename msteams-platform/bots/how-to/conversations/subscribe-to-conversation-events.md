@@ -59,10 +59,15 @@ The following table lists the supported conversation update events:
 | [`channelRenamed`](#register-conversation-event-handlers) | A channel is renamed. | Team |
 | [`channelDeleted`](#register-conversation-event-handlers) | A channel is deleted. | Team |
 | [`channelRestored`](#register-conversation-event-handlers) | A deleted channel is restored. | Team |
+| [`channelShared`](#register-conversation-event-handlers) | A shared channel is shared with a team. | Shared channel |
+| [`channelUnshared`](#register-conversation-event-handlers) | A shared channel is unshared from a team. | Shared channel |
+| [`channelMemberAdded`](#register-conversation-event-handlers) | A member is added to a shared channel. | Shared channel |
+| [`channelMemberRemoved`](#register-conversation-event-handlers) | A member is removed from a shared channel. | Shared channel |
 | [`teamMemberAdded`](#read-conversation-update-data) | A member is added to a team. | Team |
 | [`teamMemberRemoved`](#read-conversation-update-data) | A member is removed from a team. | Team |
 | [`teamRenamed`](#register-conversation-event-handlers) | A team is renamed. | Team |
 | [`teamDeleted`](#register-conversation-event-handlers) | A team is deleted. | Team |
+| [`teamHardDeleted`](#register-conversation-event-handlers) | A team is permanently deleted. | Team |
 | [`teamRestored`](#register-conversation-event-handlers) | A deleted team is restored. | Team |
 | [`teamArchived`](#register-conversation-event-handlers) | A team is archived. | Team |
 | [`teamUnarchived`](#register-conversation-event-handlers) | An archived team is restored. | Team |
@@ -99,7 +104,12 @@ Handler syntax and availability vary by SDK language. Select a language to view 
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `app.OnChannelCreated(handler)` |
+| Channel shared | `app.OnChannelShared(handler)` |
+| Channel unshared | `app.OnChannelUnshared(handler)` |
+| Channel member added | `app.OnChannelMemberAdded(handler)` |
+| Channel member removed | `app.OnChannelMemberRemoved(handler)` |
 | Members added | `app.OnMembersAdded(handler)` |
+| Team permanently deleted | `app.OnConversationUpdate(handler)` and check `ChannelData.EventType` |
 
 ```csharp
 app.OnChannelCreated(async context =>
@@ -131,7 +141,12 @@ app.OnMembersAdded(async context =>
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `app.on('channelCreated', handler)` |
+| Channel shared | `app.on('channelShared', handler)` |
+| Channel unshared | `app.on('channelUnshared', handler)` |
+| Channel member added | `app.on('channelMemberAdded', handler)` |
+| Channel member removed | `app.on('channelMemberRemoved', handler)` |
 | Members added | `app.on('membersAdded', handler)` |
+| Team permanently deleted | `app.on('teamHardDeleted', handler)` |
 
 ```typescript
 app.on('channelCreated', async ({ activity, send }) => {
@@ -159,7 +174,12 @@ app.on('membersAdded', async ({ activity, send }) => {
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `@app.on_channel_created` |
+| Channel shared | `@app.on_conversation_update` and check `channel_data.event_type` |
+| Channel unshared | `@app.on_conversation_update` and check `channel_data.event_type` |
+| Channel member added | `@app.on_conversation_update` and check `channel_data.event_type` |
+| Channel member removed | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Members added | `@app.on_conversation_update` and check `members_added` |
+| Team permanently deleted | `@app.on_team_hard_deleted` |
 
 ```python
 @app.on_channel_created
