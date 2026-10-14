@@ -240,7 +240,7 @@ Register `OnReactionsAdded` and `OnReactionsRemoved` in C#, `reactionsAdded` and
 
 ### Installation update event
 
-Teams sends an `installationUpdate` activity when an agent is installed in or uninstalled from a conversation. Use this event to send an introduction, initialize conversation data, or delete retained user and thread data.
+Teams sends an `installationUpdate` activity when an agent is installed in or uninstalled from a conversation. Use this event to send an introduction, initialize conversation data, or delete retained user and conversation data.
 
 | `action` value | Meaning |
 | --- | --- |
