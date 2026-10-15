@@ -131,27 +131,42 @@ Handler syntax and availability vary by SDK language. Select a language to view 
 | Team permanently deleted | `app.OnConversationUpdate(handler)` and check `ChannelData.EventType` |
 
 ```csharp
-app.OnChannelCreated(async context =>
+app.OnChannelCreated(async (context, cancellationToken) =>
 {
-    var channel = context.Activity.ChannelData.Channel;
-    await context.Send($"The {channel.Name} channel was created.");
+    var channelName = context.Activity.ChannelData?.Channel?.Name ?? "unknown";
+    await context.SendAsync(
+        $"The {channelName} channel was created.",
+        cancellationToken
+    );
 });
 
-app.OnMembersAdded(async context =>
+app.OnMembersAdded(async (context, cancellationToken) =>
 {
-    foreach (var member in context.Activity.MembersAdded)
+    var membersAdded = context.Activity.MembersAdded;
+    var agentId = context.Activity.Recipient?.Id;
+
+    if (membersAdded is null || agentId is null)
     {
-        if (member.Id != context.Activity.Recipient.Id)
+        return;
+    }
+
+    foreach (var member in membersAdded)
+    {
+        if (member.Id != agentId)
         {
-            await context.Send($"Welcome, {member.Name}.");
+            await context.SendAsync(
+                $"Welcome, {member.Name ?? member.Id}.",
+                cancellationToken
+            );
         }
     }
 });
 ```
 
-* `OnChannelCreated` registers the channel event handler. Use the corresponding `On...` method for another event.
-* `ChannelData.Channel` contains the channel that changed.
+* The handler receives both `context` and `cancellationToken` in Teams SDK 2.1.
+* `ChannelData?.Channel?.Name` safely reads the channel that changed.
 * `MembersAdded` contains every member included in the update.
+* `SendAsync` sends the response and propagates the handler's cancellation token.
 
 ::: zone-end
 
