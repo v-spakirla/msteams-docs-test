@@ -87,14 +87,16 @@ Use these activity properties to determine what changed:
 
 #### Handle membership updates by scope
 
-Membership updates use the `membersAdded` or `membersRemoved` collection. Teams-specific membership events also include `channelData.eventType`. Use the conversation scope and event type together:
+The general membership handlers route activities that contain `membersAdded` or `membersRemoved`. The activity payload varies by scope. Team and shared-channel membership activities also set `channelData.eventType`, which allows you to use a Teams-specific handler.
 
-| Scope | Membership activity |
-| --- | --- |
-| Personal chat | When the agent is added to a personal conversation, the activity includes `membersAdded` and `conversation.conversationType` is `personal`. The activity doesn't include `channelData.team`. |
-| Group chat | When the agent or another participant is added to or removed from a group chat, inspect `membersAdded` or `membersRemoved`. These updates don't use the team or shared-channel event types. |
-| Team membership | A team member change includes `membersAdded` or `membersRemoved` and sets `channelData.eventType` to `teamMemberAdded` or `teamMemberRemoved`. |
-| Shared-channel membership | A shared-channel member change sets `channelData.eventType` to `channelMemberAdded` or `channelMemberRemoved`. Use the corresponding collection to identify the affected members. |
+| Scope | General routing and payload | `channelData.eventType` |
+| --- | --- | --- |
+| Personal chat | Use the general added-members handler. `conversation.conversationType` is `personal`, `membersAdded` identifies the members, and `channelData.team` isn't present. | Not set to a team or channel membership event. |
+| Group chat | Use the general added-members or removed-members handler and inspect `membersAdded` or `membersRemoved`. Team and channel data isn't present. | Not set to a team or channel membership event. |
+| Team membership | The activity includes `membersAdded` or `membersRemoved` and team information in `channelData`. You can use either the general membership handler or the matching team-specific handler. | `teamMemberAdded` or `teamMemberRemoved`. |
+| Shared-channel membership | The activity identifies the shared channel in `channelData` and includes the affected members. Use the matching channel-specific handler when the SDK provides one. | `channelMemberAdded` or `channelMemberRemoved`. |
+
+Don't treat a shared-channel membership activity as a team membership activity. Shared-channel changes use `channelMemberAdded` or `channelMemberRemoved`, not `teamMemberAdded` or `teamMemberRemoved`.
 
 For any membership collection, compare each member's `id` with `recipient.id`:
 
@@ -122,8 +124,8 @@ Handler syntax and availability vary by SDK language. Select a language to view 
 | Channel unshared | `app.OnChannelUnshared(handler)` |
 | Channel member added | `app.OnChannelMemberAdded(handler)` |
 | Channel member removed | `app.OnChannelMemberRemoved(handler)` |
-| Personal or group chat members added | `app.OnMembersAdded(handler)` |
-| Personal or group chat members removed | `app.OnMembersRemoved(handler)` |
+| General members added | `app.OnMembersAdded(handler)` |
+| General members removed | `app.OnMembersRemoved(handler)` |
 | Team member added | `app.OnTeamMemberAdded(handler)` |
 | Team member removed | `app.OnTeamMemberRemoved(handler)` |
 | Team permanently deleted | `app.OnConversationUpdate(handler)` and check `ChannelData.EventType` |
@@ -162,8 +164,8 @@ app.OnMembersAdded(async context =>
 | Channel unshared | `app.on('channelUnshared', handler)` |
 | Channel member added | `app.on('channelMemberAdded', handler)` |
 | Channel member removed | `app.on('channelMemberRemoved', handler)` |
-| Personal or group chat members added | `app.on('membersAdded', handler)` |
-| Personal or group chat members removed | `app.on('membersRemoved', handler)` |
+| General members added | `app.on('membersAdded', handler)` |
+| General members removed | `app.on('membersRemoved', handler)` |
 | Team member added | `app.on('teamMemberAdded', handler)` |
 | Team member removed | `app.on('teamMemberRemoved', handler)` |
 | Team permanently deleted | `app.on('teamHardDeleted', handler)` |
@@ -198,8 +200,8 @@ app.on('membersAdded', async ({ activity, send }) => {
 | Channel unshared | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Channel member added | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Channel member removed | `@app.on_conversation_update` and check `channel_data.event_type` |
-| Personal or group chat membership | `@app.on_conversation_update` and check `members_added` or `members_removed` |
-| Team membership | `@app.on_conversation_update` and check `channel_data.event_type` |
+| General membership | `@app.on_conversation_update` and check `members_added` or `members_removed` |
+| Team or shared-channel membership | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Team permanently deleted | `@app.on_team_hard_deleted` |
 
 ```python
