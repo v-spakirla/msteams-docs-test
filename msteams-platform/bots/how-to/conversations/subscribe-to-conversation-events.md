@@ -265,7 +265,23 @@ Teams sends a `messageReaction` activity when a user adds or removes a reaction 
 
 The activity doesn't contain the original message. If your scenario depends on the message content, store the message with its ID when your agent sends it.
 
-Register `OnReactionsAdded` and `OnReactionsRemoved` in C#, `reactionsAdded` and `reactionsRemoved` in TypeScript, or `@app.on_reactions_added` and `@app.on_reactions_removed` in Python. In each handler, iterate through the corresponding reaction collection and use `replyToId` to correlate the reaction with the original agent message.
+::: zone pivot="teams-sdk-csharp"
+
+Register `OnMessageReaction` to handle both added and removed reactions. Inspect `context.Activity.ReactionsAdded` and `context.Activity.ReactionsRemoved`, and use `context.Activity.ReplyToId` to correlate the activity with the original agent message. You can instead register `OnMessageReactionAdded` or `OnMessageReactionRemoved` when you only need one type of change.
+
+::: zone-end
+
+::: zone pivot="teams-sdk-typescript"
+
+Register `app.on('messageReaction', handler)` and inspect `activity.reactionsAdded` and `activity.reactionsRemoved`. Use `activity.replyToId` to correlate the activity with the original agent message.
+
+::: zone-end
+
+::: zone pivot="teams-sdk-python"
+
+Register `@app.on_message_reaction` and inspect `ctx.activity.reactions_added` and `ctx.activity.reactions_removed`. Use `ctx.activity.reply_to_id` to correlate the activity with the original agent message.
+
+::: zone-end
 
 ### Installation update event
 
