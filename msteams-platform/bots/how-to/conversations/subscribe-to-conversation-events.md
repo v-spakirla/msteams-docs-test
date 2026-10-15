@@ -177,17 +177,29 @@ app.on('channelCreated', async ({ activity, send }) => {
 });
 
 app.on('membersAdded', async ({ activity, send }) => {
-    for (const member of activity.membersAdded) {
-        if (member.id !== activity.recipient.id) {
-            await send(`Welcome, ${member.name ?? member.id}.`);
+    const membersAdded = activity.membersAdded ?? [];
+    const agentId = activity.recipient?.id;
+
+    if (!agentId) {
+        return;
+    }
+
+    for (const member of membersAdded) {
+        if (member.id === agentId) {
+            // Use installationUpdate to handle the agent installation lifecycle.
+            continue;
         }
+
+        await send(`Welcome, ${member.name ?? member.id}.`);
     }
 });
 ```
 
 * `channelCreated` selects the channel event to handle. Use another event name from the table for a different change.
 * `activity.channelData.channel` contains the channel that changed.
-* `activity.recipient.id` identifies the agent in membership updates.
+* `activity.membersAdded ?? []` handles an activity without an added-members collection.
+* `activity.recipient?.id` identifies the agent when recipient data is available.
+* A matching member ID identifies the agent rather than a human member. Ignore it here and use `installationUpdate` for installation lifecycle work.
 
 ::: zone-end
 
