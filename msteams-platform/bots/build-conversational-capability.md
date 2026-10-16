@@ -1148,7 +1148,7 @@ A typical `channelData` object in an activity sent to your agent contains the fo
 - `tenant.id`: Microsoft Entra tenant ID passed in all contexts.
 - `team`: Passed only in channel contexts, not in personal chat.
   - `id`: GUID for the channel.
-  - `name`: Name of the team passed only in cases of [team rename events](how-to/conversations/subscribe-to-conversation-events.md#team-renamed).
+  - `name`: Name of the team passed only in cases of [team rename events](how-to/conversations/subscribe-to-conversation-events.md#handle-conversation-update-events).
 - `channel`: Passed only in channel contexts, when the agent is mentioned or for events in channels in teams, where the agent is added.
   - `id`: GUID for the channel.
   - `name`: Channel name passed only in cases of [channel modification events](~/bots/how-to/conversations/subscribe-to-conversation-events.md).
@@ -1185,7 +1185,7 @@ A typical `channelData` object in an activity sent to your agent contains the fo
 - `tenant.id`: Microsoft Entra tenant ID passed in all contexts.
 - `team`: Passed only in channel contexts, not in personal chat.
   - `id`: GUID for the channel.
-  - `name`: Name of the team passed only in cases of (how-to/conversations/subscribe-to-conversation-events.md#team-renamed).
+  - `name`: Name of the team passed only in cases of [team rename events](how-to/conversations/subscribe-to-conversation-events.md#handle-conversation-update-events).
 - `channel`: Passed only in channel contexts, when the agent is mentioned or for events in channels in teams, where the agent is added.
   - `id`: GUID for the channel.
   - `name`: Channel name passed only in cases of [channel modification events](~/bots/how-to/conversations/subscribe-to-conversation-events.md).
