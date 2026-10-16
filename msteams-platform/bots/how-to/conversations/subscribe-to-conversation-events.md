@@ -287,7 +287,7 @@ async def handle_members_added(ctx: ActivityContext[ConversationUpdateActivity])
             await ctx.send(f"Welcome, {member.name or member.id}.")
 ```
 
-* `@app.on_channel_created` registers the channel event handler. Use the corresponding decorator for another event.
+* `@app.on_channel_created` registers the channel event handler. Use a dedicated decorator when the SDK provides one. Otherwise, use `@app.on_conversation_update` and check `channel_data.event_type`.
 * The `channel_data` and `channel` checks handle an activity without channel details.
 * `ctx.activity.members_added or []` handles an activity without an added-members collection.
 * The `recipient` check ensures that the agent ID is available before comparing member IDs.
@@ -369,7 +369,7 @@ During development, return meaningful diagnostic information without posting irr
 
 | Sample name | Description | C# | TypeScript | Python |
 | --- | --- | --- | --- | --- |
-| Conversation bot | Demonstrates conversation events, Adaptive Cards, read receipts, and message update events. | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/dotnet/bot-quickstart) | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/nodejs/bot-quickstart) | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/python/bot-quickstart) |
+| Bot quickstart | Provides a basic Teams bot project and setup instructions. | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/dotnet/bot-quickstart) | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/nodejs/bot-quickstart) | [View](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-quickstart/python/bot-quickstart) |
 
 ## Design guidelines and best practices
 
