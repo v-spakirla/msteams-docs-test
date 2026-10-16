@@ -188,6 +188,11 @@ app.OnMembersAdded(async (context, cancellationToken) =>
 ```typescript
 app.on('channelCreated', async ({ activity, send }) => {
     const channel = activity.channelData.channel;
+
+    if (!channel) {
+        return;
+    }
+
     await send(`The ${channel.name} channel was created.`);
 });
 
@@ -211,7 +216,7 @@ app.on('membersAdded', async ({ activity, send }) => {
 ```
 
 * `channelCreated` selects the channel event to handle. Use another event name from the table for a different change.
-* `activity.channelData.channel` contains the channel that changed.
+* The `channel` guard handles an activity without channel details.
 * `activity.membersAdded ?? []` handles an activity without an added-members collection.
 * `activity.recipient?.id` identifies the agent when recipient data is available.
 * A matching member ID identifies the agent rather than a human member. Ignore it here and use `installationUpdate` for installation lifecycle work.
@@ -234,21 +239,32 @@ app.on('membersAdded', async ({ activity, send }) => {
 ```python
 @app.on_channel_created
 async def handle_channel_created(ctx: ActivityContext[ConversationUpdateActivity]):
-    channel = ctx.activity.channel_data.channel
+    channel_data = ctx.activity.channel_data
+    channel = channel_data.channel if channel_data else None
+
+    if not channel:
+        return
+
     await ctx.send(f"The {channel.name} channel was created.")
 
 
 @app.on_conversation_update
 async def handle_members_added(ctx: ActivityContext[ConversationUpdateActivity]):
-    if ctx.activity.members_added:
-        for member in ctx.activity.members_added:
-            if member.id != ctx.activity.recipient.id:
-                await ctx.send(f"Welcome, {member.name or member.id}.")
+    members_added = ctx.activity.members_added or []
+    recipient = ctx.activity.recipient
+
+    if not recipient:
+        return
+
+    for member in members_added:
+        if member.id != recipient.id:
+            await ctx.send(f"Welcome, {member.name or member.id}.")
 ```
 
 * `@app.on_channel_created` registers the channel event handler. Use the corresponding decorator for another event.
-* `ctx.activity.channel_data.channel` contains the channel that changed.
-* `ctx.activity.members_added` contains members included in the update.
+* The `channel_data` and `channel` checks handle an activity without channel details.
+* `ctx.activity.members_added or []` handles an activity without an added-members collection.
+* The `recipient` check ensures that the agent ID is available before comparing member IDs.
 
 ::: zone-end
 
