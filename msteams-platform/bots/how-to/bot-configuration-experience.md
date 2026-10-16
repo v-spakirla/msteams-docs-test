@@ -4,7 +4,8 @@ description: Learn to set up and reconfigure bot settings directly within the ch
 ms.topic: article
 ms.owner: angovil
 ms.localizationpriority: high
-ms.date: 06/10/2026
+ms.date: 10/16/2026
+zone_pivot_groups: teams-sdk-languages
 ---
 
 # Create an agent configuration experience in Teams
@@ -73,7 +74,7 @@ In the app manifest (previously called Teams app manifest) file, update the `fet
 For more information, see [app manifest schema](/microsoft-365/extensibility/schema/root-bots-configuration).
 
 > [!div class="nextstepaction"]
-> [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Update+app+manifest&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fbot-configuration-experience%3Ftabs%3Dteams-bot-sdk1%252Cteams-bot-sdk2%252Cteams-bot-sdk3%23update-app-manifest&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fbot-configuration-experience.md&documentVersionIndependentId=415c2389-14be-5efd-9542-a58bf8a03900&platformId=7be118d5-e34d-24a2-73f8-81d8ec7c3cdf&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
+> [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Update+app+manifest&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fbot-configuration-experience%23update-app-manifest&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fbot-configuration-experience.md&documentVersionIndependentId=415c2389-14be-5efd-9542-a58bf8a03900&platformId=7be118d5-e34d-24a2-73f8-81d8ec7c3cdf&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
 
 ### Configure your agent
 
@@ -96,7 +97,7 @@ The following table lists the response type associated with the invoke requests:
 
    When the user submits the configuration, the `config.submit` invoke is triggered. It reads the user's input and returns a different Adaptive Card. You can also update the agent configuration to return a [dialog](../../task-modules-and-cards/what-are-task-modules.md).
 
-# [C#](#tab/teams-bot-sdk1)
+::: zone pivot="teams-sdk-csharp"
 
    ```csharp
 
@@ -136,7 +137,9 @@ app.OnConfigFetch(async (context) =>
 });
    ```
 
-# [TypeScript](#tab/typescript1)
+::: zone-end
+
+::: zone pivot="teams-sdk-typescript"
 
    ```typescript
 app.on('config.fetch', async ({ activity }) => {
@@ -163,7 +166,9 @@ app.on('config.fetch', async ({ activity }) => {
 });
    ```
 
-# [Python](#tab/Py1)
+::: zone-end
+
+::: zone pivot="teams-sdk-python"
 
    ```python
 @app.on_config_open
@@ -191,14 +196,14 @@ async def handle_config_open(
     )
    ```
 
----
+::: zone-end
 
 * `type: "auth"`: You can also request the user to authenticate as a response to `config.fetch` request. The `type: "auth"` configuration prompts the user to sign in through a specified URL, which must be linked to a valid authentication page that can be opened in a browser. Authentication is essential for scenarios where the agent requires the user to be authenticated. It ensures that the user’s identity is verified, maintaining security, and personalized experiences within the agent’s functionality.
 
    > [!NOTE]
    > For `type: "auth"` only third party authentication is supported. Single sign-on (SSO) isn't supported. For more information on third party authentication, see [add authentication.](../../messaging-extensions/how-to/add-authentication.md)
 
-# [C#](#tab/teams-bot-sdk2)
+::: zone pivot="teams-sdk-csharp"
 
    ```csharp
 
@@ -225,7 +230,9 @@ app.OnConfigFetch(async (context) =>
 
    ```
 
-# [TypeScript](#tab/typescript2)
+::: zone-end
+
+::: zone pivot="teams-sdk-typescript"
 
    ```typescript
 app.on('config.fetch', async ({ activity }) => {
@@ -246,7 +253,9 @@ app.on('config.fetch', async ({ activity }) => {
 });
    ```
 
-# [Python](#tab/Py2)
+::: zone-end
+
+::: zone pivot="teams-sdk-python"
 
    ```python
 @app.on_config_open
@@ -269,11 +278,11 @@ async def handle_config_open(
     )
    ```
 
----
+::: zone-end
 
 * `type="message"`: When the type is set to message, it indicates that the agent is sending a simple message back to the user, indicating the end of the interaction or providing information without requiring further input.
 
-# [C#](#tab/teams-bot-sdk3)
+::: zone pivot="teams-sdk-csharp"
 
    ```csharp
 
@@ -286,7 +295,9 @@ app.OnConfigSubmit(async (context) =>
 
    ```
 
-# [TypeScript](#tab/TS3)
+::: zone-end
+
+::: zone pivot="teams-sdk-typescript"
 
    ```typescript
 app.on('config.submit', async ({ activity, send }) => {
@@ -299,7 +310,9 @@ app.on('config.submit', async ({ activity, send }) => {
 });
    ```
 
-# [Python](#tab/Py3)
+::: zone-end
+
+::: zone pivot="teams-sdk-python"
 
    ```python
 @app.on_config_submit
@@ -313,7 +326,7 @@ async def handle_config_submit(
     )
    ```
 
----
+::: zone-end
 
 When a user reconfigures the agent, the `fetchTask` property in the app manifest file initiates `config.fetch` in the agent logic. The user can reconfigure the agent settings post-installation in two ways:
 
@@ -326,7 +339,7 @@ When a user reconfigures the agent, the `fetchTask` property in the app manifest
    :::image type="content" source="../../assets/images/bots/reconfiguration-hover.gif" alt-text="Screenshot shows the configuration option for the agent in a Teams group chat.":::
 
 > [!div class="nextstepaction"]
-> [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Configure+your+bot&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fbot-configuration-experience%3Ftabs%3Dteams-bot-sdk1%252Cteams-bot-sdk2%252Cteams-bot-sdk3%23configure-your-bot&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fbot-configuration-experience.md&documentVersionIndependentId=415c2389-14be-5efd-9542-a58bf8a03900&platformId=7be118d5-e34d-24a2-73f8-81d8ec7c3cdf&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
+> [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Configure+your+bot&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fbot-configuration-experience%23configure-your-bot&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fbot-configuration-experience.md&documentVersionIndependentId=415c2389-14be-5efd-9542-a58bf8a03900&platformId=7be118d5-e34d-24a2-73f8-81d8ec7c3cdf&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
 
 ## Best practices
 
