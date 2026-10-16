@@ -351,7 +351,7 @@ Register `OnInstall` in C#, `install.add` and `install.remove` in TypeScript, or
 
 ### Plan for uninstall behavior
 
-When a user uninstalls an app, Teams also uninstalls its agent. The user receives an HTTP 403 response if they try to message the uninstalled app, and the agent receives an HTTP 403 response if it tries to send a new message. This behavior is consistent in personal, team, and group chat scopes.
+When a user uninstalls an app, Teams also uninstalls its agent. Messages to or from the uninstalled agent fail. Teams shows a failed-send experience when a user tries to message the agent, and an outbound request from the agent returns HTTP 403 with the `BotNotInConversationRoster` error. This behavior is consistent in personal, team, and group chat scopes.
 
 :::image type="content" source="../../../assets/images/bots/uninstallbot.png" alt-text="Screenshot of the response after a user messages an uninstalled agent." lightbox="../../../assets/images/bots/uninstallbot.png" border="true":::
 
