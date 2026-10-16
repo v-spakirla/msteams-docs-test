@@ -113,13 +113,16 @@ Member IDs received in the activity are unique to your agent. You can cache them
 
 #### Register conversation event handlers
 
-Handler syntax and availability vary by SDK language. Select a language to view the handlers used in the example and the overall registration pattern.
+Handler syntax and availability vary by SDK language. Select a language to view the handler for each event and the overall registration pattern.
 
 ::: zone pivot="teams-sdk-csharp"
 
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `app.OnChannelCreated(handler)` |
+| Channel renamed | `app.OnChannelRenamed(handler)` |
+| Channel deleted | `app.OnChannelDeleted(handler)` |
+| Channel restored | `app.OnChannelRestored(handler)` |
 | Channel shared | `app.OnChannelShared(handler)` |
 | Channel unshared | `app.OnChannelUnshared(handler)` |
 | Channel member added | `app.OnChannelMemberAdded(handler)` |
@@ -128,7 +131,12 @@ Handler syntax and availability vary by SDK language. Select a language to view 
 | General members removed | `app.OnMembersRemoved(handler)` |
 | Team member added | `app.OnTeamMemberAdded(handler)` |
 | Team member removed | `app.OnTeamMemberRemoved(handler)` |
+| Team renamed | `app.OnTeamRenamed(handler)` |
+| Team deleted | `app.OnTeamDeleted(handler)` |
 | Team permanently deleted | `app.OnConversationUpdate(handler)` and check `ChannelData.EventType` |
+| Team restored | `app.OnTeamRestored(handler)` |
+| Team archived | `app.OnTeamArchived(handler)` |
+| Team unarchived | `app.OnTeamUnarchived(handler)` |
 
 ```csharp
 app.OnChannelCreated(async (context, cancellationToken) =>
@@ -175,6 +183,9 @@ app.OnMembersAdded(async (context, cancellationToken) =>
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `app.on('channelCreated', handler)` |
+| Channel renamed | `app.on('channelRenamed', handler)` |
+| Channel deleted | `app.on('channelDeleted', handler)` |
+| Channel restored | `app.on('channelRestored', handler)` |
 | Channel shared | `app.on('channelShared', handler)` |
 | Channel unshared | `app.on('channelUnshared', handler)` |
 | Channel member added | `app.on('channelMemberAdded', handler)` |
@@ -183,7 +194,12 @@ app.OnMembersAdded(async (context, cancellationToken) =>
 | General members removed | `app.on('membersRemoved', handler)` |
 | Team member added | `app.on('teamMemberAdded', handler)` |
 | Team member removed | `app.on('teamMemberRemoved', handler)` |
+| Team renamed | `app.on('teamRenamed', handler)` |
+| Team deleted | `app.on('teamDeleted', handler)` |
 | Team permanently deleted | `app.on('teamHardDeleted', handler)` |
+| Team restored | `app.on('teamRestored', handler)` |
+| Team archived | `app.on('teamArchived', handler)` |
+| Team unarchived | `app.on('teamUnarchived', handler)` |
 
 ```typescript
 app.on('channelCreated', async ({ activity, send }) => {
@@ -228,13 +244,23 @@ app.on('membersAdded', async ({ activity, send }) => {
 | Event | Handler syntax |
 | --- | --- |
 | Channel created | `@app.on_channel_created` |
+| Channel renamed | `@app.on_channel_renamed` |
+| Channel deleted | `@app.on_channel_deleted` |
+| Channel restored | `@app.on_channel_restored` |
 | Channel shared | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Channel unshared | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Channel member added | `@app.on_conversation_update` and check `channel_data.event_type` |
 | Channel member removed | `@app.on_conversation_update` and check `channel_data.event_type` |
-| General membership | `@app.on_conversation_update` and check `members_added` or `members_removed` |
-| Team or shared-channel membership | `@app.on_conversation_update` and check `channel_data.event_type` |
+| General members added | `@app.on_conversation_update` and check `members_added` |
+| General members removed | `@app.on_conversation_update` and check `members_removed` |
+| Team member added | `@app.on_conversation_update` and check `channel_data.event_type` |
+| Team member removed | `@app.on_conversation_update` and check `channel_data.event_type` |
+| Team renamed | `@app.on_team_renamed` |
+| Team deleted | `@app.on_team_deleted` |
 | Team permanently deleted | `@app.on_team_hard_deleted` |
+| Team restored | `@app.on_team_restored` |
+| Team archived | `@app.on_team_archived` |
+| Team unarchived | `@app.on_team_unarchived` |
 
 ```python
 @app.on_channel_created
