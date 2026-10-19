@@ -2,7 +2,7 @@
 title: Enable SSO with Microsoft Entra ID
 description: Learn about Single sign-on (SSO) authentication in Microsoft Teams and how to enable it in bots and message extension, user experience, and SSO in Teams at runtime.
 ms.topic: article
-ms.date: 08/27/2026
+ms.date: 10/19/2026
 ms.localizationpriority: high
 ---
 # Enable SSO for your app
@@ -13,6 +13,8 @@ With single sign-on (SSO) in Microsoft Teams, app users can sign in to Teams usi
 > SSO for a bot app in Teams is supported in one-on-one and group chat scope, and not supported in channel scope.
 
 This section covers SSO configuration required for bot and messaging extension apps.
+
+SSO builds on OAuth to use the identity of the user signed in to Teams. If your existing bot needs an explicit sign-in flow instead of Teams SSO, see [Configure OAuth authentication for a Teams bot](configure-oauth.md). For a walkthrough that includes resource creation and Azure deployment, see [Tutorial: Add OAuth authentication to a Teams bot](add-authentication.md).
 
 ## SSO user experience in Teams
 
