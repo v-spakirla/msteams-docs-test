@@ -234,7 +234,7 @@ Before you verify grants, [upload and install your app in Teams](../../concepts/
 >
 > "Custom apps must come from the same organization that they are being installed in, and the webApplicationInfo.id must be registered in the same organization."
 >
-> The corresponding error identifier is `WebApplicationInfoIdOfSideloadedAppMustBeInTheSameTenantAsUser`. For upload prerequisites and troubleshooting, see [Upload your app in Teams](../../concepts/deploy-and-publish/apps-upload.md).
+> The corresponding error identifier is `WebApplicationInfoIdOfSideloadedAppMustBeInTheSameTenantAsUser`. For resolution steps, see [Resolve a same-organization installation error](../../concepts/deploy-and-publish/apps-upload.md#resolve-a-same-organization-installation-error).
 
 Verify grants after the first installation, after changing permission requirements and completing the applicable [app update and consent flow](/microsoftteams/apps-update-experience), or when troubleshooting an access-denied response. This check distinguishes permissions declared in the manifest from permissions actually granted on a specific resource.
 

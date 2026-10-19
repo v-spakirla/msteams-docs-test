@@ -3,7 +3,7 @@ title: Upload your custom app
 description: Learn how to upload your custom app in Microsoft Teams. Custom app upload is common when testing and debugging an app during development.
 ms.topic: how-to
 ms.localizationpriority: high
-ms.date: 01/23/2025
+ms.date: 10/19/2026
 ---
 
 # Upload your app in Teams
@@ -25,6 +25,9 @@ Users can't chat with bots that aren't connected to a Microsoft Teams app such a
 If you want to test the app, you can assign users an [app setup policy](/microsoftteams/teams-app-setup-policies#manage-app-setup-policies) that allows uploading custom apps and chat with the Azure bot through a direct link to a chat.
 
 ## Prerequisites
+
+> [!IMPORTANT]
+> Upload your custom app in the same organization where the app was created. If the app manifest specifies `webApplicationInfo.id`, the app registration referenced by that ID must also belong to the organization where you install the app. Check the organization you're signed in to in Teams before uploading. If you receive a same-organization error, see [Resolve a same-organization installation error](#resolve-a-same-organization-installation-error).
 
 * Ensure to create your [app package](~/concepts/build-and-test/apps-package.md), import it and [validate it](https://dev.teams.microsoft.com/tools/store-validation) for errors.
 * [Enable custom app uploading](~/concepts/build-and-test/prepare-your-o365-tenant.md#enable-custom-teams-apps-and-configure-custom-app-upload-settings) in Teams.
@@ -65,6 +68,23 @@ If your app fails to upload or encounters any issues to upload, check the follow
 1. Ensure that you follow all the instructions for [creating your app package](../../concepts/build-and-test/apps-package.md).
 1. Upload your app package and then [validate it](https://dev.teams.microsoft.com/tools/store-validation).
 1. Ensure your app manifest matches with the latest [schema](/microsoft-365/extensibility/schema).
+
+### Resolve a same-organization installation error
+
+If your custom app or its associated app registration belongs to a different organization from the installation organization, Teams displays:
+
+> Custom apps must come from the same organization that they are being installed in, and the webApplicationInfo.id must be registered in the same organization.
+
+You might also encounter the error identifier `WebApplicationInfoIdOfSideloadedAppMustBeInTheSameTenantAsUser`.
+
+To resolve the error:
+
+1. Check the account and organization you're using in Teams. Switch to the organization where you intend to upload and install the app.
+1. In [Developer Portal](../build-and-test/manage-your-apps-in-developer-portal.md#configure), open the app in that organization. Under **Configure** > **Basic information**, check its **Application (client) ID**. Compare it with `webApplicationInfo.id` in the `manifest.json` file in the package you're uploading. Don't use the top-level manifest `id` or an app registration's object ID in place of the application (client) ID.
+1. Check that the referenced app registration belongs to the installation organization. In the Microsoft Entra admin center, select the appropriate directory and find the existing app under **App registrations**. Verify its application (client) ID and directory (tenant) ID on the **Overview** page. For app registration and directory-selection guidance, see [Register an application with the Microsoft identity platform](/graph/auth-register-app-v2).
+1. If the app or registration belongs to another organization, use an app configured for the target organization through the [Teams agent quickstart](../../agents-in-teams/quickstart-create-agent-teams-sdk.md) or your existing setup process. Ensure the app configuration and package reference its corresponding application (client) ID, then create an updated [app package](../build-and-test/apps-package.md) and try uploading again.
+
+This requirement applies to custom app upload. It doesn't mean that apps distributed through every other method must be registered in each installation organization. For an app that requests resource-specific consent (RSC), see [Declare RSC permission requirements for an agent or app](../../graph-api/rsc/grant-resource-specific-consent.md).
 
 ## Manage your apps
 

@@ -52,7 +52,7 @@ RSC separates the permissions your agent or app requests from the access granted
 For example, declaring `TeamSettings.Read.Group` requests permission to read team settings. Consent during installation in team A grants that access for team A, not for every team in the organization.
 
 > [!IMPORTANT]
-> When you upload a custom app for testing, the app must come from the same organization where it's installed. The app registration referenced by `webApplicationInfo.id` must also belong to that organization. This requirement applies to custom app upload, not to every app distribution method. For upload prerequisites and troubleshooting, see [Upload your app in Teams](../../concepts/deploy-and-publish/apps-upload.md).
+> When you upload a custom app for testing, the app must come from the same organization where it's installed. The app registration referenced by `webApplicationInfo.id` must also belong to that organization. This requirement applies to custom app upload, not to every app distribution method. For the error message and resolution steps, see [Resolve a same-organization installation error](../../concepts/deploy-and-publish/apps-upload.md#resolve-a-same-organization-installation-error).
 
 ## Types of RSC permissions
 
