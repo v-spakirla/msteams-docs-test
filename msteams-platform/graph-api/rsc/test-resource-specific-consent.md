@@ -6,7 +6,7 @@ author: akjo
 ms.topic: tutorial
 ms.owner: vishachadha
 keywords: teams authorization OAuth SSO Microsoft Azure Active Directory (Azure AD) rsc Postman Graph
-ms.date: 03/28/2023
+ms.date: 10/19/2026
 ---
 
 # Test resource-specific consent permissions in Teams
@@ -29,7 +29,7 @@ Add a [webApplicationInfo](/microsoft-365/extensibility/schema/root-web-applicat
 
 |Name| Type | Description|
 |---|---|---|
-|`id` |String |Your Microsoft Entra app ID. For more information, see [register your app in the Microsoft Entra admin center](grant-resource-specific-consent.md#register-your-app-with-microsoft-identity-platform-using-the-azure-ad-portal).|
+|`id` |String |Your existing application (client) ID. For setup prerequisites, see [Declare RSC permission requirements for an agent or app](grant-resource-specific-consent.md#prerequisites).|
 |`resource`|String| This field has no operation in RSC, but must be added and have a value to avoid an error response; any string will do.|
 
 Specify permissions needed by the app.
@@ -199,7 +199,7 @@ Add a [webApplicationInfo](/microsoft-365/extensibility/schema/root-web-applicat
 
 |Name| Type | Description|
 |---|---|---|
-|`id` |String |Your Microsoft Entra app ID. For more information, see [register your app in the Microsoft Entra admin center](grant-resource-specific-consent.md#register-your-app-with-microsoft-identity-platform-using-the-azure-ad-portal).|
+|`id` |String |Your existing application (client) ID. For setup prerequisites, see [Declare RSC permission requirements for an agent or app](grant-resource-specific-consent.md#prerequisites).|
 |`resource`|String| This field has no operation in RSC, but must be added and have a value to avoid an error response; any string will do.|
 |`applicationPermissions`|Array of strings|RSC permissions for  your app. For more information, see [Supported RSC permissions](resource-specific-consent.md#supported-rsc-permissions).|
 

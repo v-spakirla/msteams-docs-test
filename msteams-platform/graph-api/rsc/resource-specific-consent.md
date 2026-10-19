@@ -1,10 +1,10 @@
 ---
 title: Resource-specific Consent for Apps
-description: Learn about resource-specific consent (RSC) permissions, types of RSC and supported RSC permissions, and how to grant RSC permissions to an app.
+description: Learn about resource-specific consent (RSC), supported permissions, access modes, and how to declare RSC permission requirements for an agent or app.
 ms.localizationpriority: medium
 ms.topic: article
 ms.owner: vishachadha
-ms.date: 02/20/2025
+ms.date: 10/19/2026
 ---
 
 # Resource-specific consent for your Teams app
@@ -37,7 +37,7 @@ In this section, you'll learn more about:
 
 * [Types of RSC permissions](#types-of-rsc-permissions)
 * [Supported RSC permissions](#supported-rsc-permissions)
-* [Grant RSC permissions to an app](grant-resource-specific-consent.md)
+* [Declare RSC permission requirements for an agent or app](grant-resource-specific-consent.md)
 
 ## Types of RSC permissions
 
@@ -179,7 +179,7 @@ The following table provides RSC permissions for a user and their applicable dat
 ## Next step
 
 > [!div class="nextstepaction"]
-> [Grant RSC permissions to an app](grant-resource-specific-consent.md)
+> [Declare RSC permission requirements for an agent or app](grant-resource-specific-consent.md)
 
 ## See also
 
