@@ -5,7 +5,7 @@ ms.localizationpriority: medium
 author: MSFTRickyCastaneda
 ms.author: rcastaneda
 ms.topic: article
-ms.date: 08/29/2023
+ms.date: 10/19/2026
 ---
 
 # Preapproval of RSC permissions
@@ -201,5 +201,5 @@ Remove-MgBetaTeamAppPreapproval -TeamsAppId c626ce8b-6d15-4c07-bfb1-a5fd0bc3c20e
 
 ## See also
 
-* [Grant RSC permissions to your app](grant-resource-specific-consent.md)
+* [Declare RSC permission requirements for an agent or app](grant-resource-specific-consent.md)
 * [Test resource-specific consent permissions in Teams](test-resource-specific-consent.md)
