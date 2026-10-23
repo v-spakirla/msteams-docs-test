@@ -4,7 +4,7 @@ description: Learn about resource-specific consent (RSC), supported permissions,
 ms.localizationpriority: medium
 ms.topic: article
 ms.owner: vishachadha
-ms.date: 10/19/2026
+ms.date: 10/23/2026
 ---
 
 # Resource-specific consent for your Teams app
@@ -52,7 +52,7 @@ RSC separates the permissions your agent or app requests from the access granted
 For example, declaring `TeamSettings.Read.Group` requests permission to read team settings. Consent during installation in team A grants that access for team A, not for every team in the organization.
 
 > [!IMPORTANT]
-> When you upload a custom app for testing, the app must come from the same organization where it's installed. The app registration referenced by `webApplicationInfo.id` must also belong to that organization. This requirement applies to custom app upload, not to every app distribution method. For the error message and resolution steps, see [Resolve a same-organization installation error](../../concepts/deploy-and-publish/apps-upload.md#resolve-a-same-organization-installation-error).
+> When you upload a custom app for testing, the app and the app registration referenced by `webApplicationInfo.id` must belong to the organization where you install it. If installation fails because of an organization mismatch, check the organization you're using in Teams and the referenced app registration. This requirement applies to custom app upload, not to every app distribution method. For the upload procedure and prerequisites, see [Upload your app in Teams](../../concepts/deploy-and-publish/apps-upload.md).
 
 ## Types of RSC permissions
 
