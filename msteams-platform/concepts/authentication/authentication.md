@@ -3,7 +3,7 @@ title: Authenticating app users
 description: Learn about authentication methods that you can enable in Teams app, such as Single sign-on (SSO) and using third-party OAuth providers.
 ms.topic: article
 ms.localizationpriority: medium
-ms.date: 05/23/2022
+ms.date: 10/19/2026
 ---
 # Authenticate users in Microsoft Teams
 
@@ -43,7 +43,15 @@ Choose to add authentication for your app in one of the following ways:
 
 ## Select authentication method
 
-Enable authentication with SSO or third-party OAuth IdPs in your tab app, bot app, and messaging extension app. Select one of the two methods for adding authentication in your app:
+Choose the sign-in experience for your tab, bot, or message extension. Teams SSO builds on OAuth to use the user's Teams identity; an explicit OAuth sign-in flow prompts the user to sign in to an identity provider.
+
+For a bot, choose the guidance that matches your starting point:
+
+* **Existing bot**: [Configure OAuth authentication for a Teams bot](../../bots/how-to/authentication/configure-oauth.md) without following a deployment tutorial.
+* **End-to-end walkthrough**: [Tutorial: Add OAuth authentication to a Teams bot](../../bots/how-to/authentication/add-authentication.md) covers resource creation, OAuth and SSO configuration, Azure deployment, and testing.
+* **Teams SSO**: [Enable SSO for your app](../../bots/how-to/authentication/bot-sso-overview.md) explains the sign-in experience and additional token-exchange configuration.
+
+The Azure Bot Token Service flow requires an Azure Bot registration, but doesn't require you to host your bot code in Azure App Service.
 
 :::row:::
     :::column span="1":::
@@ -82,7 +90,7 @@ Enable authentication with SSO or third-party OAuth IdPs in your tab app, bot ap
         
     :::column-end:::
     :::column span="1":::
-        :::image type="content" source="../../assets/images/authentication/bot-app-idp.png" alt-text="Authentication with third-party OAuth provider for bot app." link="../../bots/how-to/authentication/add-authentication.md":::
+        :::image type="content" source="../../assets/images/authentication/bot-app-idp.png" alt-text="Authentication with third-party OAuth provider for bot app." link="../../bots/how-to/authentication/configure-oauth.md":::
     :::column-end:::
 :::row-end:::
 :::row:::
@@ -102,9 +110,11 @@ Enable authentication with SSO or third-party OAuth IdPs in your tab app, bot ap
 
 ## See also
 
+* [Configure OAuth authentication for a Teams bot](../../bots/how-to/authentication/configure-oauth.md)
+* [Tutorial: Add OAuth authentication to a Teams bot](../../bots/how-to/authentication/add-authentication.md)
 * [Enable single sign-on in a tab app](../../tabs/how-to/authentication/tab-sso-overview.md)
 * [Microsoft Teams authentication flow for tabs](~/tabs/how-to/authentication/auth-flow-tab.md)
-* [Single sign-on support for bots](~/bots/how-to/authentication/auth-aad-sso-bots.md)
+* [Enable SSO for your app](~/bots/how-to/authentication/bot-sso-overview.md)
 * [Add authentication to your message extension](~/messaging-extensions/how-to/add-authentication.md)
 * [Glossary](../../get-started/glossary.md)
 * [Microsoft Graph authentication provider based on scenario](/graph/sdks/choose-authentication-providers)
