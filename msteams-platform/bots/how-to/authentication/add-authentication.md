@@ -268,6 +268,17 @@ The bot code uses the connection name to retrieve user authentication tokens. Th
 
 Use one implementation of the Bot Auth Quickstart sample. Keep credentials out of source control and use the sample's local configuration or your hosting platform's secret settings.
 
+The linked samples don't all use the same Teams SDK authentication APIs:
+
+| Implementation | SDK dependency in the sample | Authentication API version |
+| --- | --- | --- |
+| C#/.NET | `Microsoft.Teams.Apps` `2.1.*` | Current SDK 2.1 OAuth flows, including `AddOAuthFlow` and `SignInAsync`. |
+| TypeScript (Node.js) | `@microsoft/teams.apps` `^2.0.0` | Legacy SDK 2.0-style `oauth.defaultConnectionName` and context-level sign-in. The dependency range can resolve to later 2.x versions; it isn't a pin to SDK 2.0. |
+| Python | `microsoft-teams-apps==2.0.15` | Legacy SDK 2.0 `default_connection_name` and context-level sign-in. |
+
+> [!NOTE]
+> The TypeScript and Python instructions below follow the linked legacy implementations; they aren't SDK 2.1 code examples. For current SDK 2.1 examples in all three languages, see [Teams SDK user authentication](/microsoftteams/platform/teams-sdk/in-depth-guides/user-authentication). When updating an implementation, migrate its authentication code together with its SDK dependencies. Don't mix legacy default-connection configuration with the current flow-registration APIs.
+
 # [C#/.NET](#tab/dotnet)
 
 1. Clone [cs-auth-sample][teams-bot-auth-quickstart-cs].
@@ -306,11 +317,14 @@ Use one implementation of the Bot Auth Quickstart sample. Keep credentials out o
 # [JavaScript](#tab/node-js)
 
 1. Clone [node-auth-sample][teams-bot-auth-quickstart-js].
-1. In a console, go to the project: </br></br>
-`cd samples/TeamsSDK/bot-auth-quickstart/nodejs/bot-auth-quickstart`
-1. Install modules</br></br>
-`npm install`
-1. Update the **.env** configuration as follows:
+1. In a console, go to the `samples/TeamsSDK/bot-auth-quickstart/nodejs/bot-auth-quickstart` project folder.
+1. Install dependencies:
+
+    ```console
+    npm install
+    ```
+
+1. For manual local setup with the Azure Bot resource you created in this tutorial, create or update `.localConfigs` in the project root:
 
     ```dotenv
     TENANT_ID=<bot-tenant-id>
@@ -323,6 +337,17 @@ Use one implementation of the Bot Auth Quickstart sample. Keep credentials out o
     - `CLIENT_ID` identifies the bot to Azure Bot Service. Set it to the bot's Microsoft App ID.
     - `CLIENT_SECRET` supplies the bot identity's client secret value. Use the value, not the secret ID.
     - `CONNECTION_NAME` selects the bot's configured OAuth connection. Set it to the exact connection name saved on the Azure Bot resource.
+
+    Microsoft 365 Agents Toolkit generates this file during its local deploy lifecycle in `m365agents.local.yml`. If you use that workflow instead of manual setup, update the Toolkit environment values that populate `.localConfigs`; don't rely on manual edits that a later deploy can overwrite. Keep `.localConfigs` out of source control.
+
+1. Build the TypeScript project, then start it with the sample's installed `env-cmd` dependency to load `.localConfigs`. Run each command after the previous one succeeds:
+
+    ```console
+    npm run build
+    npx --no-install env-cmd -f .localConfigs npm start
+    ```
+
+    For local development with automatic restarts, use `npm run dev:teamsfx` instead. That script also loads `.localConfigs` before starting the development server. `npm start` alone doesn't load this file, and the sample's launch scripts don't load `.env`.
 
 1. In the `appPackage` folder, update the [app manifest values](#apppackagemanifestjson) before installing the app in Teams.
 
