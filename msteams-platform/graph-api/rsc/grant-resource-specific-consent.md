@@ -5,7 +5,7 @@ ms.localizationpriority: medium
 ms.author: vikasalmal
 ms.topic: reference
 ms.owner: vishachadha
-ms.date: 10/23/2026
+ms.date: 10/26/2026
 ---
 
 # Declare RSC permission requirements for an agent or app
@@ -321,6 +321,8 @@ For request permissions and response details, see [List permissionGrants of a ch
 For request permissions and response details, see [List permissionGrants of a user](/graph/api/user-list-permissiongrants?view=graph-rest-1.0&preserve-view=true).
 
 ## Code sample
+
+The two Node.js samples below are Teams tab samples that use the Teams JavaScript client library (`@microsoft/teams-js`) and the Microsoft Graph client. They aren't Teams SDK samples.
 
 | **Sample name** | **Description** | **.NET** |**Node.js** | **App manifest**|
 |-----------------|-----------------|----------------|----------------|----------------|
