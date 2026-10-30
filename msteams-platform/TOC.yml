@@ -328,9 +328,9 @@
       displayName: OAuth Identity Providers, authentication using IdP
     - name: Add authentication to tab app
       href: tabs/how-to/authentication/auth-tab-aad.md
-    - name: Configure OAuth authentication for a Teams bot
+    - name: Configure OAuth authentication for Teams bots and agents
       href: bots/how-to/authentication/configure-oauth.md
-      displayName: OAuth, bot authentication, identity provider, Azure Bot, connection settings
+      displayName: OAuth, bot authentication, agent authentication, Teams SDK, identity provider, Azure Bot, connection settings
     - name: "Tutorial: Add OAuth authentication to a Teams bot"
       href: bots/how-to/authentication/add-authentication.md
       displayName: OAuth, bot authentication, tutorial, Azure Bot, Microsoft Entra ID, deployment
