@@ -344,6 +344,7 @@ The C#/.NET sample references `Microsoft.Teams.Apps` `2.1.*` and uses current SD
     - `OAuth.ConnectionName` selects the bot's configured OAuth connection. Set it to the exact connection name saved on the Azure Bot resource.
 
 1. Use `M365Agent/appPackage`, alongside the `BotAuthQuickstart` runtime project, and update the [app manifest values](#apppackagemanifestjson) before installing the app in Teams.
+1. To run locally, use `dotnet run --no-launch-profile --urls http://localhost:3978` from `BotAuthQuickstart`. This builds the project and sets the HTTP port to `3978`.
 
 > [!div class="nextstepaction"]
 > [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Prepare+the+bot+sample+code+using+C%23%2F.NET&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fauthentication%2Fadd-authentication%3Ftabs%3Dnode-js%252Cdotnet-sample%23test-the-connection&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fauthentication%2Fadd-authentication.md&documentVersionIndependentId=70952f91-56e9-ff08-59f6-e237d4aaeca9&platformId=cc53b20b-69e0-cb70-1ca7-9b939c969c92&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
@@ -357,11 +358,7 @@ The C#/.NET sample references `Microsoft.Teams.Apps` `2.1.*` and uses current SD
 
 1. Clone [node-auth-sample][teams-bot-auth-quickstart-js].
 1. In a console, go to the `samples/TeamsSDK/bot-auth-quickstart/nodejs/bot-auth-quickstart` project folder.
-1. Install dependencies:
-
-    ```console
-    npm install
-    ```
+1. Install dependencies with `npm install`.
 
 1. For manual local setup with the Azure Bot resource you created in this tutorial, create or update `.localConfigs` in the project root:
 
@@ -401,17 +398,7 @@ The C#/.NET sample references `Microsoft.Teams.Apps` `2.1.*` and uses current SD
 > The Python sample pins `microsoft-teams-apps==2.0.15` and uses legacy SDK 2.0 `default_connection_name` and context-level sign-in. These instructions follow the linked legacy implementation, not SDK 2.1 code examples.
 
 1. Clone [py-auth-sample][teams-bot-auth-quickstart-py] from the GitHub repository.
-1. In the Python runtime project folder, create and activate a virtual environment for your operating system. Install the sample and its dependencies:
-
-    ```console
-    python -m venv .venv
-    ```
-
-    After activating `.venv`, run:
-
-    ```console
-    python -m pip install -e .
-    ```
+1. In the Python runtime project folder, create a virtual environment with `python -m venv .venv` and activate it for your operating system. Then install the sample and its dependencies with `python -m pip install -e .`.
 
 1. Configure the environment values shown in the sample's `.env.TEMPLATE`, using its local configuration instructions:
 
@@ -427,9 +414,10 @@ The C#/.NET sample references `Microsoft.Teams.Apps` `2.1.*` and uses current SD
     - `CLIENT_SECRET` supplies the bot identity's client secret value. Use the value, not the secret ID.
     - `CONNECTION_NAME` selects the bot's configured OAuth connection. Set it to the exact connection name saved on the Azure Bot resource.
 
-    Save the values in `.env` in the Python runtime project folder. SDK 2.0.15 loads this file from the current working directory during import. Alternatively, set the values as environment variables in the terminal before running `python main.py`. The supplied Visual Studio Code **Start Python** debug configuration also loads `.env` through its `envFile` setting.
+    Save the values in `.env` in the Python runtime project folder. SDK 2.0.15 loads this file from the current working directory during import. Alternatively, set the values as environment variables in the terminal.
 
 1. In the `appPackage` folder, update the [app manifest values](#apppackagemanifestjson) before installing the app in Teams.
+1. With the virtual environment active, run `python main.py` from the Python runtime project folder. Alternatively, use the supplied Visual Studio Code **Start Python** debug configuration, which loads `.env` through its `envFile` setting.
 
 > [!div class="nextstepaction"]
 > [I ran into an issue](https://github.com/MicrosoftDocs/msteams-docs/issues/new?template=Doc-Feedback.yaml&title=%5BI+ran+into+an+issue%5D+Prepare+the+bot+sample+code+using+Python&&author=%40vikasalmal&pageUrl=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fmicrosoftteams%2Fplatform%2Fbots%2Fhow-to%2Fauthentication%2Fadd-authentication%3Ftabs%3Dpython%252Cdotnet-sample%23prepare-the-bot-sample-code&contentSourceUrl=https%3A%2F%2Fgithub.com%2FMicrosoftDocs%2Fmsteams-docs%2Fblob%2Fmain%2Fmsteams-platform%2Fbots%2Fhow-to%2Fauthentication%2Fadd-authentication.md&documentVersionIndependentId=70952f91-56e9-ff08-59f6-e237d4aaeca9&platformId=cc53b20b-69e0-cb70-1ca7-9b939c969c92&metadata=*%2BID%253A%2Be473e1f3-69f5-bcfa-bcab-54b098b59c80%2B%250A*%2BService%253A%2B%2A%2Amsteams%2A%2A)
@@ -591,8 +579,9 @@ For current app-upload instructions, see [Upload your app in Microsoft Teams](..
 Teams is an entirely cloud-based product. It requires all services it accesses to be available from the cloud using HTTPS endpoints. Therefore, to enable the bot (our sample) to work in Teams, you need to either publish the code to the cloud of your choice, or make a locally running instance externally accessible via a **tunneling** tool. We recommend [ngrok](https://ngrok.com/download), which creates an externally addressable URL for a port you open locally on your machine.
 To set up ngrok in preparation for running your Teams app locally, follow these steps:
 
+1. Disable any local Playground request-authentication bypass and start the bot using your selected language's sequence in [Prepare the bot sample code](#prepare-the-bot-sample-code). Confirm the listening port in the startup output; keep inbound request authentication enabled.
 1. In a terminal window, go the directory where you have `ngrok.exe` installed. We suggest setting the *environment variable* path to point to it.
-1. Run, for example, `ngrok http 3978 --host-header=localhost:3978`. Replace the port number as needed.
+1. Run, for example, `ngrok http 3978 --host-header=localhost:3978`. Replace both port values with the bot's actual listening port.
    It launches ngrok to listen on the port you specify and returns an externally addressable URL, valid for as long as ngrok is running.
 
 1. Copy the forwarding HTTPS address that is similar to: `https://dea822bf.ngrok.io/`.
@@ -602,27 +591,6 @@ To set up ngrok in preparation for running your Teams app locally, follow these 
     1. Select your **Bot Registration**.
     1. In the left panel, select **Settings**.
     1. In the right panel, in the **Messaging endpoint** box, enter the ngrok URL, in our example, `https://dea822bf.ngrok.io/api/messages`.
-1. Disable any local Playground request-authentication bypass. Start your configured bot from its runtime project folder:
-
-    ::: zone pivot="teams-sdk-csharp"
-
-    Run `dotnet run --no-launch-profile --urls http://localhost:3978` from `BotAuthQuickstart`. This builds the project and explicitly selects the port used by the tunnel example.
-
-    ::: zone-end
-
-    ::: zone pivot="teams-sdk-typescript"
-
-    After `npm install` and `npm run build`, run `npx --no-install env-cmd -f .localConfigs npm start`. For automatic restarts, use `npm run dev:teamsfx`.
-
-    ::: zone-end
-
-    ::: zone pivot="teams-sdk-python"
-
-    Activate the virtual environment, install dependencies with `python -m pip install -e .`, and set the runtime environment variables described in [Prepare the bot sample code](#prepare-the-bot-sample-code). Run `python main.py`, or use the supplied **Start Python** debug configuration to load `.env`.
-
-    ::: zone-end
-
-    Confirm the actual listening port in the startup output and use that port for the tunnel. Keep inbound request authentication enabled when connecting Teams to your local endpoint.
 1. Test the bot while running locally using the Azure portal's **Test in Web Chat**.
 1. Open the bot's personal chat in Teams and complete [user sign-in and OAuth fallback checks](#verify-user-sign-in-and-oauth-fallback) and [SSO token-exchange verification](#verify-teams-sso-token-exchange). Web Chat alone doesn't verify Teams SSO.
 
