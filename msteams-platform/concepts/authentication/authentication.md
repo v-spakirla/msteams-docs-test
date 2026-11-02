@@ -47,7 +47,7 @@ Choose the sign-in experience for your tab, bot, message extension, or conversat
 
 For a bot or Teams SDK conversational agent that accesses APIs on behalf of a signed-in user, choose the guidance that matches your starting point:
 
-* **Existing bot or Teams SDK agent**: [Configure OAuth authentication for a Teams bot](../../bots/how-to/authentication/configure-oauth.md) without following a deployment tutorial.
+* **Existing bot or Teams SDK agent**: [Configure OAuth authentication for Teams agents and bots](../../bots/how-to/authentication/configure-oauth.md) without following a deployment tutorial.
 * **End-to-end walkthrough**: [Tutorial: Add OAuth authentication to a Teams bot](../../bots/how-to/authentication/add-authentication.md) covers resource creation, OAuth and SSO configuration, Azure deployment, and testing.
 * **Teams SSO**: [Enable SSO for your app](../../bots/how-to/authentication/bot-sso-overview.md) explains the sign-in experience and additional token-exchange configuration.
 * **Teams SDK agent runtime integration**: [Teams SDK user authentication](/microsoftteams/platform/teams-sdk/in-depth-guides/user-authentication) provides language-specific examples for sign-in, token use, sign-out, and resuming pending requests.
@@ -114,7 +114,7 @@ The Azure Bot Token Service flow requires an Azure Bot registration, but doesn't
 
 ## See also
 
-* [Configure OAuth authentication for a Teams bot](../../bots/how-to/authentication/configure-oauth.md)
+* [Configure OAuth authentication for Teams agents and bots](../../bots/how-to/authentication/configure-oauth.md)
 * [Tutorial: Add OAuth authentication to a Teams bot](../../bots/how-to/authentication/add-authentication.md)
 * [User authentication for Teams SDK agents](/microsoftteams/platform/teams-sdk/in-depth-guides/user-authentication)
 * [Enable single sign-on in a tab app](../../tabs/how-to/authentication/tab-sso-overview.md)

@@ -14,7 +14,7 @@ With single sign-on (SSO) in Microsoft Teams, app users can sign in to Teams usi
 
 This section covers SSO configuration required for bot and messaging extension apps.
 
-SSO builds on OAuth to use the identity of the user signed in to Teams. If your existing bot needs an explicit sign-in flow instead of Teams SSO, see [Configure OAuth authentication for a Teams bot](configure-oauth.md). For a walkthrough that includes resource creation and Azure deployment, see [Tutorial: Add OAuth authentication to a Teams bot](add-authentication.md).
+SSO builds on OAuth to use the identity of the user signed in to Teams. If your existing bot needs an explicit sign-in flow instead of Teams SSO, see [Configure OAuth authentication for Teams agents and bots](configure-oauth.md). For a walkthrough that includes resource creation and Azure deployment, see [Tutorial: Add OAuth authentication to a Teams bot](add-authentication.md).
 
 ## SSO user experience in Teams
 

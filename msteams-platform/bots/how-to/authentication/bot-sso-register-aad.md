@@ -9,7 +9,7 @@ ms.date: 10/19/2026
 
 Microsoft Entra ID provides app users access to your bot or message extension app. The app user who has signed in to Teams can be given access to your app.
 
-For baseline OAuth setup without Teams SSO, see [Configure OAuth authentication for a Teams bot](configure-oauth.md). This article adds the SSO-specific configuration: expose an API scope, authorize Teams clients, configure the token exchange URL, and update the app manifest.
+For baseline OAuth setup without Teams SSO, see [Configure OAuth authentication for Teams agents and bots](configure-oauth.md). This article adds the SSO-specific configuration: expose an API scope, authorize Teams clients, configure the token exchange URL, and update the app manifest.
 
 ## Configure SSO with a separate authentication app
 
