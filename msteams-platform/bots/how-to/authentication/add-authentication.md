@@ -309,7 +309,7 @@ Use one implementation of the Bot Auth Quickstart sample. Keep credentials out o
 
 For current SDK 2.1 examples, see [Teams SDK user authentication](/microsoftteams/platform/teams-sdk/in-depth-guides/user-authentication). When updating an implementation, migrate its authentication code together with its SDK dependencies. Don't mix legacy default-connection configuration with the current flow-registration APIs.
 
-When adapting the authentication flow for an agent task, interactive sign-in completes on a **later turn**. Don't assume the original message handler waits for sign-in and then continues. Preserve the pending request before starting sign-in and resume it in the completion callback for the correct user, conversation, and OAuth connection. See [Integrate with Teams SDK 2.1](configure-oauth.md#integrate-with-teams-sdk-21) for runtime guidance and versioned examples.
+For agent task continuation after sign-in, see [Integrate with Teams SDK 2.1](configure-oauth.md#integrate-with-teams-sdk-21) and its pending-work guidance.
 
 ::: zone pivot="teams-sdk-csharp"
 
