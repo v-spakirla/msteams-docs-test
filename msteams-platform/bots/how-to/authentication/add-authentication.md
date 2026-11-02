@@ -493,7 +493,7 @@ Only one messaging endpoint is active per bot registration. For local Teams test
 
 ## Test locally using Microsoft 365 Agents Playground
 
-Microsoft 365 Agents Playground is optional for checking local message routing, replies, and activity payloads without installing the app in Teams. It doesn't verify the real Teams user identity, consent experience, OAuth token exchange, or Teams SSO. Use non-authenticated commands to check message handling; mocked activities aren't proof that user authentication works.
+Microsoft 365 Agents Playground is optional for checking local message routing, replies, and activity payloads with non-authenticated commands. It doesn't validate user authentication; use [Teams testing](#install-and-test-the-bot-in-teams), including [SSO token-exchange verification](#verify-teams-sso-token-exchange).
 
 Follow the [Teams SDK Playground setup](/microsoftteams/platform/teams-sdk/developer-tools/agents-playground/overview) for your installed SDK version. Playground sends requests without a Bot Framework JWT by default. SDK versions that reject unauthenticated requests require explicit local request-authentication configuration.
 
@@ -518,14 +518,12 @@ The current guide documents `dangerously_allow_unauthenticated_requests` for Pyt
 > [!WARNING]
 > Allow unauthenticated requests only in an isolated local Playground configuration. Never enable this bypass in production, deploy it to App Service, or expose a bypass-enabled local endpoint through a public tunnel. Disable it before testing through the Azure Bot Service and Teams.
 
-To validate OAuth and SSO, complete [Install and test the bot in Teams](#install-and-test-the-bot-in-teams), using either the deployed bot or an authenticated local bot behind an HTTPS tunnel. Complete both the command checks and [SSO token-exchange verification](#verify-teams-sso-token-exchange); Playground message tests alone don't complete this tutorial's authentication validation.
-
 ## Test the deployed bot
 
 <!--There are several testing scenarios here. Ideally, we'd have a separate article on the what, why, 
 and when for these, and just reference that from here, along with the set of steps that exercises the bot code.-->
 
-Use Web Chat to check message delivery and explicit sign-in. Test Teams SSO separately in [Install and test the bot in Teams](#install-and-test-the-bot-in-teams).
+Web Chat checks message delivery and explicit sign-in, not Teams SSO. For SSO, use [Verify Teams SSO token exchange](#verify-teams-sso-token-exchange).
 
 1. In your browser, go to the [**Azure portal**][azure-portal].
 1. Find your resource group.
@@ -562,15 +560,17 @@ Use Web Chat to check message delivery and explicit sign-in. Test Teams SSO sepa
 
 ### Verify user sign-in and OAuth fallback
 
-1. Enter `signin`. Complete consent or the sign-in prompt if one appears. When Teams uses the OAuth sign-in card and pop-up, a successful sign-in verifies the interactive fallback path, not SSO token exchange.
+1. Enter `signin`. Complete consent or the sign-in prompt if one appears.
 1. Enter `profile` and confirm that the bot returns your Microsoft Graph profile.
 1. Enter `signout` and confirm the sign-out response.
 
-A successful profile response or sign-in-completion callback doesn't distinguish SSO from OAuth fallback. If Teams completes sign-in without a pop-up, continue with token-exchange verification rather than treating the absence of a prompt as proof of SSO.
+These commands verify user access, not the sign-in mechanism. Complete [SSO token-exchange verification](#verify-teams-sso-token-exchange) separately.
 
 ### Verify Teams SSO token exchange
 
 Run this check after granting the required consent, using the same account in Teams and the authentication flow.
+
+A profile response, sign-in-completion callback, or absence of a pop-up doesn't prove SSO. If the user signs in through an OAuth card and pop-up, record that result as interactive OAuth fallback.
 
 1. Enable the installed SDK version's authentication diagnostics, or use a debugger at the SDK's invoke handler. For a deployed bot, inspect its application logs; for a local bot, use its debugger or diagnostic output. Inspect only activity names, correlation identifiers, connection names, and exchange outcomes. Don't log access tokens, authorization headers, secrets, or full invoke payloads.
 1. Enter `signout` to clear the sample's stored token for the current user and OAuth connection. Enter `signin` again while observing diagnostics so a previously cached token doesn't satisfy the test without a new exchange.

@@ -52,7 +52,7 @@ Teams single sign-on (SSO) builds on OAuth; it isn't a separate authorization pr
 | Explicit sign-in through an OAuth card or link | Follow this article. Leave **Token Exchange URL** blank. The user signs in to the identity provider and grants the requested permissions. |
 | Teams SSO, with a sign-in prompt when needed | Follow [Configure your app in Microsoft Entra ID](bot-sso-register-aad.md). SSO also requires an exposed API scope, authorized Teams clients, an application ID URI for **Token Exchange URL**, and app manifest configuration. |
 
-The [Bot Auth Quickstart sample](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-auth-quickstart) includes SSO. Complete its SSO configuration if you use that sample; a successful OAuth connection test alone doesn't verify Teams SSO.
+The [Bot Auth Quickstart sample](https://github.com/OfficeDev/Microsoft-Teams-Samples/tree/main/samples/TeamsSDK/bot-auth-quickstart) includes SSO. Complete its SSO configuration and [token-exchange verification](add-authentication.md#verify-teams-sso-token-exchange) if you use that sample.
 
 ### Register the identity-provider application
 
@@ -106,7 +106,7 @@ For other identity providers, select the appropriate **Service Provider** and su
 1. Review the requested permissions and grant consent if allowed.
 1. Confirm that **Test Connection to \<your-connection-name> Succeeded** appears.
 
-This test verifies the identity-provider connection. It doesn't verify your agent's or bot's messaging endpoint, app installation, or Teams SSO token exchange.
+This portal test checks only the identity-provider connection. Test runtime integration in Teams; for SSO, follow [token-exchange verification](add-authentication.md#verify-teams-sso-token-exchange).
 
 <a name="use-the-connection-in-your-bot"></a>
 <a name="use-the-connection-in-your-bot-or-agent"></a>
@@ -135,7 +135,7 @@ For an existing conversational agent or bot built with **Teams SDK 2.1**, follow
 
 Execute the agent's authenticated API call in application code, such as a tool handler, using the selected flow's token for the current user.
 
-For a Teams app using the default public-cloud OAuth endpoint, include `token.botframework.com` in the app manifest's `validDomains`. Test sign-in, a protected API call, and sign-out from a personal chat in Teams with your agent's or bot's authenticated HTTPS messaging endpoint configured. A successful portal connection test or local Playground message test doesn't validate this runtime integration. If you also enable Teams SSO, [verify its token exchange in Teams](add-authentication.md#verify-teams-sso-token-exchange).
+For a Teams app using the default public-cloud OAuth endpoint, include `token.botframework.com` in the app manifest's `validDomains`. Test sign-in, a protected API call, and sign-out from a personal chat in Teams with your agent's or bot's authenticated HTTPS messaging endpoint configured. If you also enable Teams SSO, [verify its token exchange in Teams](add-authentication.md#verify-teams-sso-token-exchange).
 
 For an agent adaptation, also verify the following behaviors in Teams:
 
@@ -194,7 +194,6 @@ The .NET sample uses Teams SDK 2.1. The TypeScript and Python implementations us
 - This guide covers user-delegated access through the Azure Bot Token Service, not app-only access or agent identity authentication. The runtime APIs apply to Teams SDK, not Microsoft 365 Agents SDK or declarative agents.
 - An Azure Bot resource is required for this connection flow, regardless of hosting location. Core OAuth configuration doesn't require Azure App Service hosting.
 - The procedure uses Microsoft Entra ID and public-cloud endpoints. Other providers have different fields; regional and sovereign-cloud deployments require their supported OAuth endpoints.
-- A successful portal connection test doesn't validate runtime integration, Teams installation, or SSO. Profile retrieval through interactive OAuth fallback isn't proof of successful Teams SSO token exchange.
 - Teams SSO requires additional API, client preauthorization, token-exchange, and manifest configuration. When using separate bot and authentication registrations, follow [Configure SSO with a separate authentication app](bot-sso-register-aad.md#configure-sso-with-a-separate-authentication-app).
 
 ## Next step
