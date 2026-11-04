@@ -47,6 +47,12 @@
     - name: Format agent messages
       href: bots/how-to/format-your-bot-messages.md
       displayName: cross-platform support
+    - name: Send the widget
+      href: bots/send-the-widget.md
+      displayName: HTML widget, extended Markdown, html-widget, Teams SDK, widget payload
+    - name: Share the widget with Teams
+      href: bots/share-the-widget-with-teams.md
+      displayName: HTML widget, handshake, resize, tool calls, MCP, Teams SDK
     - name: Suggested actions
       href: bots/how-to/conversations/suggested-actions.md
       displayName: agent, command, quick, response, button, imBack, Action.Compose, compose, Action.Submit, submit, automatic
