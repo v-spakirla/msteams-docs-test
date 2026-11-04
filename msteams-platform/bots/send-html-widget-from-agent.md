@@ -718,6 +718,9 @@ The security-policy validator returns warnings for external origins that aren't 
 
 ## Limitations and known issues
 
+> [!NOTE]
+> HTML widget content can't currently be exported through export APIs. Consider this limitation when developing bots for organizations with content export requirements. Organizations can disable bots that can send HTML widgets if this limitation doesn't meet their requirements.
+
 - HTML widgets and the related Teams SDK APIs are in preview.
 - Sent messages retain their original HTML. Updating the file doesn't update widgets in existing messages.
 - This walkthrough doesn't implement user authentication for tools that require a verified Microsoft Entra identity.
