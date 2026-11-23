@@ -59,10 +59,10 @@ To set up ngrok in preparation to execute your Teams app locally, follow these s
 
 To use ngrok in your project based on the capabilities you're using, you must replace all URL references in your code, configuration, and manifest.json file to use this URL endpoint.
 
-For bots registered in the Microsoft Bot Framework, update the bot's messaging endpoint to use this new ngrok endpoint. For example, `https://2d1224fb.ngrok.io/api/messages`. You can validate that ngrok is working by testing the bot response in the Bot Framework portal's Test chat window. This chat tests basic bot connectivity, not the full Teams experience. Upload your app to Teams to validate Teams-specific functionality.
+For agents or bots built with Teams SDK, update the messaging endpoint in your bot's registration to use the ngrok HTTPS URL followed by `/api/messages`, for example, `https://2d1224fb.ngrok.io/api/messages`. Keep your local app and ngrok running, then upload and install your app in Teams. Send a message to your agent or bot in the Teams client to verify that Teams can reach your local endpoint and test Teams-specific functionality.
 
 > [!NOTE]
-> To update the messaging endpoint for a bot, you must use the Bot Framework. Select your bot in [your list of bots in Bot Framework](https://dev.botframework.com/bots). You do not need to migrate your bot to Microsoft Azure. You can also update your messaging endpoint through [Developer Portal for Teams](~/concepts/build-and-test/teams-developer-portal.md).
+> If the tunnel URL changes, update the messaging endpoint in your bot's registration before testing again. For registration and installation guidance, see [Register, install, and chat in Teams](~/agents-in-teams/quickstart-create-agent-teams-sdk.md#register-install-and-chat-in-teams).
 
 ## Cloud-hosted
 
