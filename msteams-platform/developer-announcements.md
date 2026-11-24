@@ -2,7 +2,7 @@
 title: Teams Platform Developer Announcements
 description: Learn about new Microsoft Teams developer features and updates to existing features, deprecation notes, and changes. Subscribe to the Atom feed for latest updates.
 ms.topic: whats-new
-ms.date: 09/04/2026
+ms.date: 11/24/2026
 author: nickwalkmsft
 ms.author: nickwalk
 ms.reviewer: nickwalk
@@ -12,6 +12,18 @@ ms.localizationpriority: high
 # Teams Platform developer announcements
 
 Subscribe to the [Atom feed](https://aka.ms/TeamsPlatformUpdates) to receive these announcements in your feed reader as they're published.
+
+## Review needed: Conversation event fields for group-chat-to-channel conversion
+
+*November 24, 2026*
+
+Review your Teams agent's conversation and installation event handlers for group-chat-to-channel conversions. The `channelData.convertedFromConversation.id` and `channelData.settings.backgroundInstall` fields help your agent preserve conversation state and avoid unexpected welcome messages after conversion.
+
+Use `channelData.convertedFromConversation.id` in the `channelMemberAdded` handler to identify the original group chat and reassociate its state with the destination channel's `conversation.id`. In the `installationUpdate/add` handler, `channelData.settings.backgroundInstall` set to `true` indicates an automatic installation by Teams, including conversions, so you can suppress welcome messages and other inappropriate first-time setup behaviors. Don't use `teamMemberAdded` to detect conversions, and don't assume these events arrive in a particular order.
+
+This guidance applies to existing agents as well as agents under development. Only agents that support private channels are added to the converted channel. For more information, see [Handle group-chat-to-channel conversions](bots/how-to/conversations/subscribe-to-conversation-events.md#handle-group-chat-to-channel-conversions).
+
+---
 
 ## Review needed: TLS 1.3 support and TLS fingerprinting
 

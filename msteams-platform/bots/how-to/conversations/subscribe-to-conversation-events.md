@@ -1,10 +1,10 @@
 ---
 title: Conversation events
-description: Learn about conversation update, message reaction, app installation update events, uninstall behavior, and events and error handling for Microsoft Teams agents.
+description: Learn to handle Microsoft Teams agent conversation, installation, and reaction events, including group-chat-to-channel conversions.
 ms.topic: article
 ms.localizationpriority: medium
 ms.author: nickwalk
-ms.date: 08/19/2026
+ms.date: 11/24/2026
 ---
 
 # Conversation events for agents
@@ -16,6 +16,10 @@ When building your conversational agents for Microsoft Teams, you can work with 
 * Trigger a notification when a channel is created, renamed, or deleted.
 * Trigger a notification when an agent message is liked by a user.
 * Identify the default channel for your agent from user input (selection) during installation.
+* Preserve conversation state when a group chat is converted to a private channel.
+
+> [!IMPORTANT]
+> Review your agent's event handlers for [group-chat-to-channel conversions](#handle-group-chat-to-channel-conversions), including handlers in existing agents. Conversion can trigger membership and installation events, but welcome messages and other first-time setup behaviors might not be appropriate.
 
 ## Conversation update events
 
@@ -45,6 +49,7 @@ The following table shows a list of Teams conversation update events with more d
 | Channel deleted | channelDeleted | OnTeamsChannelDeletedAsync | [A channel is deleted](#channel-deleted). | Team |
 | Channel restored | channelRestored | OnTeamsChannelRestoredAsync | [A channel is restored](#channel-deleted). | Team |
 | Members added | membersAdded | OnTeamsMembersAddedAsync | [A member is added](#members-added). | All |
+| Channel members added | channelMemberAdded | Teams SDK: `app.on('channelMemberAdded', ...)` | [A member is added to a channel](#channel-members-added), including an eligible agent added during a group-chat-to-channel conversion. | Team |
 | Members removed | membersRemoved | OnTeamsMembersRemovedAsync | [A member is removed](#members-removed). | All |
 | Team renamed | teamRenamed | OnTeamsTeamRenamedAsync | [A team is renamed](#team-renamed). | Team |
 | Team deleted | teamDeleted | OnTeamsTeamDeletedAsync | [A team is deleted](#team-deleted). | Team |
@@ -367,6 +372,8 @@ A member added event is sent to your agent in the following scenarios:
 
 The member added activity `eventType` is set to `teamMemberAdded` when the event is sent from a team context. To determine if the new member added was the agent itself or a user, check the `Activity` object of the `Context object`. If the `MembersAdded` list contains an object where `id` is the same as the `id` field of the `Recipient` object, then the member added is the agent, else it's a user. The agent's `id` is formatted as `28:<MicrosoftAppId>`.
 
+During a [group-chat-to-channel conversion](#handle-group-chat-to-channel-conversions), an agent added to the new channel also receives `conversationUpdate` with `channelData.eventType` set to `teamMemberAdded` if it wasn't already a member of the destination team. Don't use this event for conversion-related logic: its payload doesn't distinguish a conversion from other scenarios. Use [channel members added](#channel-members-added) instead.
+
 > [!TIP]
 > Use the [`InstallationUpdate` event](#installation-update-event) to determine when your agent is added or removed from a conversation.
 
@@ -504,6 +511,33 @@ async def handle_members_added(ctx: ActivityContext[ConversationUpdateActivity])
 ```
 
 ---
+
+### Channel members added
+
+The `conversationUpdate` activity with `channelData.eventType` set to `channelMemberAdded` notifies your agent of channel membership additions. An eligible agent added to a private channel during a group-chat-to-channel conversion receives this event.
+
+> [!NOTE]
+> The `channelData.convertedFromConversation.id` property identifies the original group chat when the agent is added through a conversion. Its presence distinguishes a conversion from other channel membership additions. Use it with `conversation.id`, which identifies the destination channel, to reassociate conversation state.
+
+Use only this handler for state reassociation and other required post-conversion behavior. Don't send welcome messages or perform other first-time setup behaviors when `convertedFromConversation.id` is present.
+
+The following TypeScript example shows where to integrate your agent's state reassociation logic:
+
+```typescript
+app.on('channelMemberAdded', async ({ activity, send }) => {
+    if (activity.channelData?.convertedFromConversation?.id) {
+        // Reassociate state from activity.channelData.convertedFromConversation.id
+        // with activity.conversation.id in your agent's state store.
+    } else {
+        await send('Welcome to the channel.');
+    }
+});
+```
+
+* `channelData.convertedFromConversation.id` identifies the original conversation before conversion. Read this Teams-provided value to locate the group chat's existing state.
+* `conversation.id` identifies the destination channel after the conversion. Associate the existing state with this Teams-provided value to preserve conversational continuity.
+
+For the conversion process, event delivery conditions, and limitations, see [Handle group-chat-to-channel conversions](#handle-group-chat-to-channel-conversions). For channel membership guidance, see [Get app notifications for agent membership changes](../../../build-apps-for-shared-private-channels.md#get-app-notifications-for-agent-membership-changes).
 
 ### Members removed
 
@@ -957,7 +991,35 @@ async def handle_team_unarchived(ctx: ActivityContext[ConversationUpdateActivity
 
 ---
 
-Now that you've worked with the conversation update events, you can understand the message reaction events that occur for different reactions to a message.
+## Handle group-chat-to-channel conversions
+
+Users can convert a group chat into a private channel when they need the capabilities and structure of a channel. Your agent needs to recognize the resulting events so it can preserve conversational continuity without treating the conversion as a first-time installation.
+
+### Conversion process and agent eligibility
+
+When a user converts a group chat, Teams automatically:
+
+1. Creates a private channel in the team selected by the user.
+1. Adds the group chat's members, including eligible agents, to the channel and, if necessary, its team. Only agents that support private channels are eligible.
+1. Moves the group chat's messages into the channel as read-only messages. [Targeted messages](../../../agents-in-teams/targeted-messages.md) aren't moved.
+1. Deletes the original group chat.
+
+Agents that don't support private channels aren't added to the channel or its team. Their previously sent group chat messages are still moved. For information about enabling private channel support, see [Agents and tab apps for shared and private channels](../../../build-apps-for-shared-private-channels.md).
+
+### Handle conversion-related events
+
+Conversion uses existing conversation and installation events, not a separate conversion event. Inspect the activity payloads as described in the following table:
+
+| Event | Received after conversion? | Handler guidance |
+| --- | --- | --- |
+| `conversationUpdate/channelMemberAdded` | All agents added to the new channel. | Use only this handler for state reassociation and other required post-conversion behavior. If `channelData.convertedFromConversation.id` is present, use it and `conversation.id` to reassociate state. Suppress welcome messages and other behaviors that aren't appropriate for conversions. See [Channel members added](#channel-members-added). |
+| `installationUpdate/add` | Agents added to the new channel that weren't already members of the team. | Conversion-related logic usually isn't required here. If you handle this event, check whether `channelData.settings.backgroundInstall` is `true` and suppress welcome messages and other undesired behavior for automatic installations. See [Install update event](#install-update-event). |
+| `conversationUpdate/teamMemberAdded` | Agents added to the new channel that weren't already members of the team. | Don't use this event for conversion-related logic. Its payload doesn't distinguish a conversion from other scenarios. See [Members added](#members-added). |
+
+> [!IMPORTANT]
+> These event payloads can arrive in any order. Don't rely on installation or team membership events arriving before the channel membership event.
+
+Your agent doesn't receive new message events for messages moved from the group chat. Reassociate any conversational memory or existing state from the original group chat with the destination channel in the `channelMemberAdded` handler, rather than expecting to rebuild state from message events.
 
 ## Message reaction events
 
@@ -1158,6 +1220,11 @@ The agent receives an `installationUpdate` event when you install an agent to a 
 
 Use the `installationUpdate` event to send an introductory message from your agent on installation. This event helps you to meet your privacy and data retention requirements. You can also clean up and delete user or thread data when the agent is uninstalled.
 
+> [!NOTE]
+> The `channelData.settings.backgroundInstall` property is `true` when Teams installs the agent automatically, including during a group-chat-to-channel conversion. It isn't a conversion-only indicator. Check this property before sending welcome messages or performing other first-time setup behaviors, and suppress behaviors that aren't appropriate for automatic installations.
+
+During a [group-chat-to-channel conversion](#handle-group-chat-to-channel-conversions), an agent added to the new channel receives `installationUpdate` with `action` set to `add` only if it wasn't already a member of the destination team. Use the [`channelMemberAdded` handler](#channel-members-added), not the installation handler, for state reassociation.
+
 Similar to the `conversationUpdate` event that's sent when agent is added to a team, the conversation.id of the `installationUpdate` event is set to the id of the channel selected by a user during app installation or the channel where the installation occurred. The id represents the channel where the user intends for the agent to operate and must be used by the agent when sending a welcome message. For scenarios where the ID of the General channel is explicitly required, you can get it from `team.id` in `channelData`.
 
 In this example, the `conversation.id` of the `conversationUpdate` and `installationUpdate` activities is set to the ID of the Response channel in the Daves Demo team.
@@ -1196,14 +1263,18 @@ protected override async Task OnInstallationUpdateAddAsync(IContext<IInstallatio
 # [TypeScript](#tab/typescript)
 
 ```typescript
-app.on('install.add', async ({ send }) => {
-    await send('Added');
+app.on('install.add', async ({ activity, send }) => {
+    if (!activity.channelData?.settings?.backgroundInstall) {
+        await send('Added');
+    }
 });
 
 app.on('install.remove', async ({ send }) => {
     await send('Uninstalled');
 });
 ```
+
+* `channelData.settings.backgroundInstall` indicates Teams performed the installation automatically. Read this Teams-provided value and send the introductory message only when it isn't `true`.
 
 # [JSON](#tab/json)
 
@@ -1309,3 +1380,9 @@ In the development phase, it's always helpful to send meaningful messages in con
 
 > [!div class="nextstepaction"]
 > [Send proactive messages](~/bots/how-to/conversations/send-proactive-messages.md)
+
+## See also
+
+* [Agents and tab apps for shared and private channels](../../../build-apps-for-shared-private-channels.md)
+* [Channel and group chat conversations for agents](channel-and-group-conversations.md)
+* [Send and receive targeted messages in group conversations](../../../agents-in-teams/targeted-messages.md)
