@@ -25,7 +25,7 @@ This article covers bot-based message extensions. For API-based message extensio
 * A reachable HTTPS messaging endpoint and a test tenant where you can install the app in Teams.
 * A language-specific Teams SDK project configured for app authentication.
 
-The snippets use the named OAuth flow APIs documented for Teams SDK 2.1. For configuration, see the [Teams SDK user authentication setup guide](https://microsoft.github.io/teams-sdk/cli/guides/user-authentication-setup/).
+The snippets use the named OAuth flow APIs documented for Teams SDK 2.1. For configuration, see [Configure your app in Microsoft Entra ID](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-register-aad).
 
 <!-- TODO: Engineering must confirm tested package versions for all three languages and the supported message-extension scenarios, clients, accounts, and tenants. -->
 
@@ -74,19 +74,19 @@ The following values must match:
 
 Use the OAuth connection name consistently in your code. This article uses `graph` as an example name; registration doesn't itself grant Microsoft Graph permissions.
 
-If the bot uses a user-assigned managed identity, the bot identity and authentication app registration have different roles. Follow the ID mapping in [SSO with user-assigned managed identity](https://microsoft.github.io/teams-sdk/teams/user-authentication/sso-setup/#sso-with-user-assigned-managed-identity).
+If the bot uses a user-assigned managed identity, the bot identity and authentication app registration have different roles. Follow the ID mapping in [webApplicationInfo property](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-manifest#webapplicationinfo-property).
 
 ### Configure the app manifest
 
 Configure `webApplicationInfo` with the authentication app ID and the matching application ID URI. Add the required token-service domains to `validDomains`, and configure the relevant commands or link domains in `composeExtensions`.
 
-For more information, see [Update app manifest for SSO](bot-sso-manifest.md) and [Teams SDK SSO setup](https://microsoft.github.io/teams-sdk/teams/user-authentication/sso-setup/).
+For more information, see [Update app manifest for SSO](bot-sso-manifest.md) and [Configure your app in Microsoft Entra ID](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-register-aad).
 
 Use the token-service endpoints appropriate for your deployment. For regional endpoints, see [OAuth URL support for Azure Bot Service](/azure/bot-service/ref-oauth-redirect-urls?view=azure-bot-service-4.0&preserve-view=true). A service domain containing `botframework.com` is still a service requirement; it isn't an SDK dependency.
 
 ### Configure app authentication and register the OAuth flow
 
-Configure the bot identity, tenant, and credential using the [Teams SDK app authentication setup guide](https://microsoft.github.io/teams-sdk/teams/app-authentication/) and your language's application configuration. Keep credentials in environment configuration or a secret store, not in source code.
+Configure the bot identity, tenant, and credential using [Review or update agent runtime authentication configuration](https://learn.microsoft.com/microsoftteams/platform/agents-in-teams/configure-agent-runtime-authentication) and your language's application configuration. Keep credentials in environment configuration or a secret store, not in source code.
 
 The following snippets register one OAuth connection. They don't register extension handlers or complete SSO. Add the missing handlers before starting or deploying the app.
 
@@ -101,7 +101,7 @@ const graph = app.addOAuthFlow('graph');
 
 * `graph` identifies the OAuth connection used by this flow. Set it to your Azure Bot OAuth connection name so token operations use the intended connection.
 
-Registered OAuth flows can't be combined with `oauth.defaultConnectionName`. For more information, see [TypeScript user authentication](https://microsoft.github.io/teams-sdk/typescript/in-depth-guides/user-authentication/).
+Registered OAuth flows can't be combined with `oauth.defaultConnectionName`. For related conversational-bot guidance, see [Add code to enable SSO in a bot (TypeScript)](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-code?tabs=ts1).
 
 ::: zone-end
 
@@ -125,7 +125,7 @@ OAuthFlow graph = teams.GetOAuthFlow("graph");
 
 * `"graph"` identifies the OAuth connection registered with your application. Set it to your Azure Bot OAuth connection name so the retrieved flow owns the intended token operations.
 
-This snippet assumes an ASP.NET Core Teams SDK project. Register your handlers before calling `app.Run()`. For more information, see [C# user authentication](https://microsoft.github.io/teams-sdk/csharp/in-depth-guides/user-authentication/).
+This snippet assumes an ASP.NET Core Teams SDK project. Register your handlers before calling `app.Run()`. For related conversational-bot guidance, see [Add code to enable SSO in a bot (C#)](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-code?tabs=cs1).
 
 ::: zone-end
 
@@ -140,7 +140,7 @@ graph = app.add_oauth_flow("graph")
 
 * `"graph"` identifies the OAuth connection used by this flow. Set it to your Azure Bot OAuth connection name so token operations use the intended connection.
 
-For more information, see [Python user authentication](https://microsoft.github.io/teams-sdk/python/in-depth-guides/user-authentication/).
+For related conversational-bot guidance, see [Add code to enable SSO in a bot (Python)](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-code?tabs=py1).
 
 ::: zone-end
 
@@ -335,7 +335,7 @@ If your API receives an access token intended for that API, validate it with a s
 
 Don't rely on decoding a token or checking an issuer prefix alone. Don't log access tokens, credentials, or full authentication payloads, and don't include tokens in cards or diagnostic responses.
 
-For more information, see [Validate tokens](/entra/identity-platform/access-tokens#validate-tokens) and the [Teams SDK trust model](https://microsoft.github.io/teams-sdk/typescript/essentials/app-authentication/trust-model/).
+For more information, see [Validate tokens](/entra/identity-platform/access-tokens#validate-tokens) and [Teams SDK incoming request authentication](https://learn.microsoft.com/microsoftteams/platform/agents-in-teams/incoming-request-authentication).
 
 ## Handle errors
 
@@ -399,8 +399,8 @@ A complete Teams SDK message-extension SSO sample isn't verified for this draft.
 
 ## See also
 
-* [Teams SDK user authentication](https://microsoft.github.io/teams-sdk/teams/user-authentication/)
-* [Teams SDK SSO setup](https://microsoft.github.io/teams-sdk/teams/user-authentication/sso-setup/)
-* [TypeScript message-extension search commands](https://microsoft.github.io/teams-sdk/typescript/in-depth-guides/message-extensions/search-commands/)
-* [C# message-extension search commands](https://microsoft.github.io/teams-sdk/csharp/in-depth-guides/message-extensions/search-commands/)
-* [Python message-extension search commands](https://microsoft.github.io/teams-sdk/python/in-depth-guides/message-extensions/search-commands/)
+* [Authenticating app users](https://learn.microsoft.com/microsoftteams/platform/concepts/authentication/authentication)
+* [Configure your app in Microsoft Entra ID](https://learn.microsoft.com/microsoftteams/platform/bots/how-to/authentication/bot-sso-register-aad)
+* [Respond to search commands (TypeScript)](https://learn.microsoft.com/microsoftteams/platform/messaging-extensions/how-to/search-commands/respond-to-search?tabs=typescript)
+* [Respond to search commands (C#)](https://learn.microsoft.com/microsoftteams/platform/messaging-extensions/how-to/search-commands/respond-to-search?tabs=dotnet1)
+* [Respond to search commands (Python)](https://learn.microsoft.com/microsoftteams/platform/messaging-extensions/how-to/search-commands/respond-to-search?tabs=python)
