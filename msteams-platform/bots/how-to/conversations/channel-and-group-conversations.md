@@ -4,7 +4,7 @@ description: Learn how to work with user mentions, send messages, and handle age
 ms.topic: article
 ms.localizationpriority: medium
 ms.author: nickwalk
-ms.date: 06/23/2026
+ms.date: 11/26/2026
 zone_pivot_groups: teams-sdk-languages
 ---
 
@@ -84,7 +84,12 @@ If you send an introduction message, include a brief description of the agent's 
 
 You can also store the `conversationId` during installation to enable [proactive messaging](/microsoftteams/platform/teams-sdk/essentials/sending-messages/proactive-messaging) later.
 
+> [!IMPORTANT]
+> Before sending an introduction message, check whether `channelData.settings.backgroundInstall` is `true`. This value indicates that Teams installed the agent automatically, including during a group-chat-to-channel conversion. Suppress welcome messages and other behavior that's inappropriate for automatic installations. Use `channelMemberAdded`, not `install.add`, to reassociate conversation state after a conversion. For more information, see [Implement or update event handlers](#implement-or-update-event-handlers).
+
 The following code shows an example of sending welcome messages on installation:
+
+The .NET and Python examples show the welcome message for an ordinary installation only. In those handlers, apply the background installation check described above before sending the message.
 
 ::: zone pivot="teams-sdk-csharp"
 
@@ -100,11 +105,14 @@ app.OnInstall(async context =>
 ::: zone pivot="teams-sdk-typescript"
 
 ```typescript
-app.on('install.add', async ({ send }) => 
-{ 
-    await send('Hello! I\'m your agent. Here\'s what I can do...'); 
-}); 
+app.on('install.add', async ({ activity, send }) => {
+    if (activity.channelData?.settings?.backgroundInstall !== true) {
+        await send('Hello! I\'m your agent. Here\'s what I can do...');
+    }
+});
 ```
+
+* `channelData.settings.backgroundInstall` indicates whether Teams installed the agent automatically. Check for `true` so automatic installations don't trigger an introduction message.
 
 ::: zone-end
 
@@ -129,6 +137,84 @@ Don't send a message in the following cases:
 * Your agent is first mentioned in a group or channel instead of being first added to a team.
 * A group or channel is renamed.
 * A team member is added to a group or channel.
+* Teams installs your agent automatically, including during a group-chat-to-channel conversion.
+
+## Support group-chat-to-channel conversion
+
+A group-chat-to-channel conversion moves an existing group conversation into a private channel. Users can convert a group chat when their collaboration needs the capabilities and structure of channels. Your agent should recognize the resulting conversation events to preserve conversational memory and avoid unexpected welcome messages.
+
+Review your event handlers even if you created your agent before conversion was available. Handlers that don't account for conversions might lose conversation continuity or repeat introductory messages.
+
+### Conversion process and agent eligibility
+
+When a user converts a group chat into a channel, Teams automatically:
+
+1. Creates a private channel in the team selected by the user.
+1. Adds the group chat's members, including eligible agents, to the channel and, if necessary, its team. Only agents that support private channels are eligible.
+1. Moves the group chat's messages into the channel as read-only. [Targeted messages](~/agents-in-teams/targeted-messages.md) aren't moved.
+1. Deletes the original group chat.
+
+Agents that don't support private channels aren't added to the channel or its team. Their previously sent group chat messages are still moved to the channel.
+
+For more information about private channel support and app eligibility, see [Agents and tab apps for shared and private channels](~/build-apps-for-shared-private-channels.md#enable-apps-for-shared-and-private-channels).
+
+### Implement or update event handlers
+
+Agents in the group chat receive conversation events as part of conversion. These events also occur outside conversions, so inspect the activity payload before deciding how to respond.
+
+* **Reassociate conversation state.** Your agent doesn't receive message events for messages moved into the channel. Use the original group chat ID and the destination conversation ID to reassociate conversational memory or existing state with the channel.
+* **Suppress inappropriate behavior.** Don't send welcome messages or repeat onboarding when the agent joins a channel as part of a conversion.
+
+| Event | Received after conversion? | Guidance summary |
+| --- | --- | --- |
+| `conversationUpdate/channelMemberAdded` | Received by all agents added to the channel. | Use only this handler for state reassociation and other required post-conversion behavior. The presence of `channelData.convertedFromConversation.id` indicates a conversion. Use this value as the original group chat ID and `conversation.id` as the destination conversation ID. Suppress welcome messages and other behavior that's inappropriate for conversions. |
+| `installationUpdate/add` | Received by agents added to the channel that weren't members of its team before conversion. | Usually doesn't require conversion-specific logic. If you handle this event for other reasons, check whether `channelData.settings.backgroundInstall` is `true` and suppress welcome messages and other undesired behavior. This value indicates an automatic installation by Teams, not necessarily a conversion. |
+| `conversationUpdate/teamMemberAdded` | Received by agents added to the channel that weren't members of its team before conversion. | Don't use this event for conversion-related logic. Its payload doesn't distinguish conversions from other scenarios. |
+
+> [!NOTE]
+> The `channelData.convertedFromConversation.id` property identifies the original group chat in a conversion-related `channelMemberAdded` activity. The `channelData.settings.backgroundInstall` property is a Boolean installation flag. A value of `true` identifies an automatic installation, which can occur during conversion or in other scenarios. Don't use it alone to identify a conversion.
+
+> [!IMPORTANT]
+> These activity payloads can arrive in any order. Perform state reassociation only in the `channelMemberAdded` handler, without depending on an installation or team membership event arriving first.
+
+The following TypeScript example illustrates how to branch on the conversion properties in an existing Teams SDK app. Replace the state reassociation comments with your agent's state storage logic.
+
+::: zone pivot="teams-sdk-typescript"
+
+```typescript
+import type { ChannelData } from '@microsoft/teams.api';
+
+app.on('channelMemberAdded', async ({ activity }) => {
+  const channelData: ChannelData & {
+    convertedFromConversation?: { id?: string };
+  } = activity.channelData ?? {};
+
+  if (channelData.convertedFromConversation?.id) {
+    // Reassociate state from channelData.convertedFromConversation.id
+    // with activity.conversation.id. Don't send a welcome message.
+  } else {
+    // Handle ordinary channel membership additions as appropriate.
+  }
+});
+
+app.on('install.add', async ({ activity }) => {
+  if (activity.channelData?.settings?.backgroundInstall !== true) {
+    // Handle an ordinary installation, including onboarding if appropriate.
+  }
+});
+```
+
+* `channelData.convertedFromConversation.id` identifies the group chat before conversion. Use its received value to locate existing state; don't assign a replacement ID.
+* `activity.conversation.id` identifies the destination conversation after conversion. Use its received value to associate the state with the channel.
+* `channelData.settings.backgroundInstall` distinguishes automatic installations from ordinary installation flows. Check for `true` to suppress onboarding for automatic installations.
+
+The local `ChannelData` extension describes the conversion field when your SDK version doesn't yet declare it.
+
+::: zone-end
+
+For example, if your agent stores a project discussion's memory under the group chat ID, reassociate that memory with the destination `conversation.id` when you receive a conversion-related `channelMemberAdded` activity. Don't wait for the moved messages to be delivered again, and don't send a second welcome message.
+
+For more information about the event payloads and installation behavior, see [Conversation events for agents](subscribe-to-conversation-events.md).
 
 ## Work with mentions
 
@@ -572,6 +658,8 @@ The following table lists the throttling limits for tag mentions in an agent:
 
 ## See also
 
+* [Conversation events for agents](subscribe-to-conversation-events.md)
+* [Agents and tab apps for shared and private channels](~/build-apps-for-shared-private-channels.md)
 * [Teams SDK - API Client](/microsoftteams/platform/teams-sdk/essentials/api)
 * [Teams SDK - Microsoft Graph Integration](/microsoftteams/platform/teams-sdk/essentials/graph)
 * [Send and receive targeted messages in group conversations](~/agents-in-teams/targeted-messages.md)
