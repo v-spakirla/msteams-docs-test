@@ -12,6 +12,8 @@ zone_pivot_groups: teams-sdk-languages
 
 To enable users to install an agent in a team or group chat, add the `teams` or `groupchat` scope. This allows all members of the conversation to interact with your agent. After the agent is installed, it has access to metadata about the conversation, such as the list of conversation members. Also, when it's installed in a team, the agent has access to details about that team and the full list of channels.
 
+Handle [group-chat-to-channel conversions](#support-group-chat-to-channel-conversion) to preserve your agent's conversation state and avoid unexpected welcome messages.
+
 By default, agents in group chats and channels only receive messages when they're directly @mentioned. They don't receive other messages sent to the conversation. For example, your agent doesn't receive a message when the team or channel is mentioned, or when someone replies to a message from your agent without @mentioning it. The Teams SDK provides a dedicated `mention` activity route to handle @mention events.
 
 > [!NOTE]
