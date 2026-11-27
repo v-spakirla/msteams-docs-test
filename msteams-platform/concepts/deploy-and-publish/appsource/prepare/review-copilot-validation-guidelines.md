@@ -164,7 +164,6 @@ For utilising `worker_agents` property in your Declarative agent manifest, ensur
 You must ensure to meet the following guidelines for agents:
 
 * The Teams Store validation guidelines related to screenshots for Microsoft 365 apps are applicable. For more information, see [screenshots](teams-store-validation-guidelines.md#screenshots).
-* Apps with agent functionality must have at least one screenshot related to Microsoft 365 Copilot functionality. [*Must fix*]
 
 [Back to top](#agent-store-validation-guidelines)
 
@@ -358,7 +357,7 @@ A custom engine agent is a conversational Teams bot that must meet the following
 4. The bot must include the following UX design components:
 
    1. An [AI label](/microsoftteams/platform/bots/how-to/bot-messages-ai-generated-content?tabs=after%2Cbotmessage#ai-label) that enables users to identify that the message was generated using AI. This label may appear as a persistent disclaimer, per-message or content disclaimer, or during the first-run experience. [*Must fix*]
-   2. A [feedback button](/microsoftteams/platform/bots/how-to/bot-messages-ai-generated-content?tabs=after%2Cbotmessage#feedback-buttons) that enables users to provide positive or negative feedback on the agent's messages. [*Must fix*]
+   2. A [feedback button](/microsoftteams/platform/agents-in-teams/integrate-ai/user-feedback-controls) that enables users to provide positive or negative feedback on the agent's messages. [*Must fix*]
    3. A [citation](/microsoftteams/platform/bots/how-to/bot-messages-ai-generated-content?tabs=after%2Cbotmessage#citations) that enables users to refer to the source of the bot message through in-text citations and references. [*Must fix*]
    4. A [sensitivity label](/microsoftteams/platform/bots/how-to/bot-messages-ai-generated-content?tabs=after%2Cbotmessage#sensitivity-label) that enables users to understand the confidentiality of the bot message. [*Good-to-fix*]
    5. The agent must stream its responses to the user. [*Must fix*]
@@ -436,9 +435,7 @@ A custom engine agent is a conversational Teams bot that must meet the following
   * Instructions field in manifest
   * Test notes
 
-* All search results in the message extension capability must include a relevant title, subtitle, and url which will also appear in citations of your agent [*Must fix*].
-
-* All agents and plugins must provide rich responses that clearly describe the action performed and include citations that allow users to identify the source of the response [*Must fix*]. For more information, see [citations](/microsoft-365/copilot/extensibility/plugin-citations).
+* All agents and plugins must provide rich responses that clearly describe the action performed and include citations that allow users to identify the source of the response. Acceptable citation formats include clickable citations or rich citations with contextual title/subtitle information, or a representative pill showing name/logo [*Must fix*]. For more information, see [citations](/microsoft-365/copilot/extensibility/plugin-citations).
 
 * An agent sending multiple messages must make sure that messages are not repetitive or redundant in nature.
 
