@@ -2,26 +2,145 @@
 title: Teams Platform Developer Announcements
 description: Learn about new Microsoft Teams developer features and updates to existing features, deprecation notes, and changes. Subscribe to the Atom feed for latest updates.
 ms.topic: whats-new
-ms.date: 11/26/2026
-author: nickwalkmsft
-ms.author: nickwalk
-ms.reviewer: nickwalk
-ms.localizationpriority: high
+ms.date: 11/27/2026
 ---
 
 # Teams Platform developer announcements
 
 Subscribe to the [Atom feed](https://aka.ms/TeamsPlatformUpdates) to receive these announcements in your feed reader as they're published.
 
-## Review needed: Group-chat-to-channel conversion event fields
+## Review needed: Update existing agents for group-chat-to-channel conversion
 
-*November 26, 2026*
+*November 27, 2026*
 
-Review your agent's event handlers for group-chat-to-channel conversions. The `channelData.convertedFromConversation.id` field identifies the original group chat in a conversion-related `channelMemberAdded` activity. The `channelData.settings.backgroundInstall` field indicates an automatic installation by Teams, including installations performed during conversion.
+If you maintain a Teams agent that participates in group chats, review and update its event handlers for group-chat-to-channel conversion, including agents built before this capability was available.
 
-Use `channelMemberAdded` to reassociate existing conversation state with the destination `conversation.id`, and suppress welcome messages during conversion. If you handle `installationUpdate/add`, check for `backgroundInstall: true` to suppress onboarding during automatic installations. Don't use `teamMemberAdded` to detect conversions, and don't assume conversion-related events arrive in a particular order.
+New event fields help your agent preserve conversation state and distinguish automatic installations from ordinary onboarding. Existing handlers that don't account for these scenarios can lose conversation continuity or send unexpected welcome messages.
 
-Only agents that support private channels are added to the destination channel. Review this guidance even if your agent was created before conversion was available. For more information, see [Support group-chat-to-channel conversion](bots/how-to/conversations/channel-and-group-conversations.md#support-group-chat-to-channel-conversion).
+Review [Preserve conversation state during conversion](bots/build-conversational-capability.md#preserve-conversation-state-during-conversion), update your [conversion event handlers](bots/agent-activity-handler-reference.md#handle-group-chat-to-channel-conversion-events), and apply the [welcome-message guidance](bots/how-to/conversations/send-proactive-messages.md#welcome-messages) to existing implementations.
+
+---
+
+## Action required: Upcoming changes to file upload and download authentication for Microsoft Teams agents
+
+*November 20, 2026*
+
+Microsoft has changed the implementation and app manifest requirements for agents that send and receive files in Teams. Developers maintaining Teams agents that send or receive files must update them by **March 1, 2027** to ensure file operations continue working after that date. See [Update an existing bot to authenticate file requests](bots/how-to/bots-filesv4.md#update-an-existing-bot-to-authenticate-file-requests) for detailed instructions and guidance.
+
+Agents that send and receive files require the following changes, which can be made and deployed separately:
+
+- Code changes, which can be implemented and deployed effective immediately. Microsoft recommends implementing and deploying these changes as soon as possible.
+- Declaration of additional resource-specific consent (RSC) permissions requirements in the agent's app manifest. This change can be made and published starting **January 15, 2027**, when the new permissions become available in Teams. This change can be made separately from the required code changes.
+
+These changes strengthen security and align with Microsoft OneDrive and SharePoint authentication requirements. To share feedback, report issues, or ask questions about these changes, go to [aka.ms/TeamsDeveloperFeedback](https://aka.ms/TeamsDeveloperFeedback).
+
+---
+
+## Preview: Build interactive HTML widgets for Teams agents
+
+*November 16, 2026*
+
+HTML widgets let your agents deliver rich, interactive experiences directly in Teams chat. Build custom interfaces with HTML, CSS, and JavaScript, or display widgets supplied by Model Context Protocol (MCP) servers, so users can explore data and take action without leaving the conversation.
+
+Get started with [Send HTML widgets](html-widgets/send-html-widgets.md) and [Serve MCP-generated HTML widgets](html-widgets/serve-html-widgets.md). Follow the [user experience guidelines](html-widgets/ux-guidelines.md) and [accessibility guidelines](html-widgets/accessibility-guidelines.md) to create responsive, accessible experiences.
+
+---
+
+## Preview: Socket mode for Teams agents
+
+*November 13, 2026*
+
+Socket mode lets your agent connect to Teams over a WebSocket and receive activities through that connection. Your agent initiates the connection, so it doesn’t need a public HTTPS endpoint or development tunnel.
+
+During preview, socket mode is available only for newly created agents. Use it only to develop and test your agent. For production agents, including bots published to the Teams Store, use an HTTPS messaging endpoint.
+
+To use socket mode, enable it in your bot registration and configure your agent’s runtime to use it. We recommend using the Teams SDK to establish and maintain the WebSocket connection for you. For more information, see [Choose how your agent receives activity data from Teams](/microsoftteams/platform/agents-in-teams/agent-connectivity).
+
+---
+
+## Released: Agents can now stream in group chats, channels, and meetings
+
+*October 28, 2026*
+
+Streaming now works in every conversation type.
+
+Users judge an agent by how quickly they see it working. When they see activity right away, the agent feels faster and more responsive. Agents used to get that only in one-on-one chats. Now they get it in group chats, channels, and meeting chats too.
+
+With streaming, users can read your agent's response while it's being generated. Before the response starts, informative updates show what your agent is doing, and your agent can change them as the work progresses.
+
+Informative updates have also been redesigned for group conversations. They now appear right under the message your agent is replying to. In a busy channel or chat, everyone can see which request your agent is working on, and the updates don't clutter the conversation.
+
+To adopt:
+
+- **Teams SDK**: Update to the latest version. Your existing streaming code then works in every conversation type. Older versions keep the legacy experience, in one-on-one chats only.
+- **REST API**: Set `replyToId` to the ID of the user message you're replying to. It's required outside one-on-one chats. If you leave it out in a one-on-one chat, you get the legacy experience.
+
+For details, see [Stream agent messages](bots/streaming-ux.md).
+
+---
+
+## Preview update: Agent sessions preview ended, will not be released
+
+*October 22, 2026*
+
+After careful consideration of the agent sessions feature, released in public preview in September, Teams has decided not to move forward with it. Preview availability for sessions has ended and it will not be released, but keep an eye out for updates about coming features that will help users and agents structure their conversations in Teams.
+
+The enabling `supportsSessions` property has been removed from the developer preview version of the app manifest schema. If it's still present in your app's manifest, remove it and update your app in all installed scopes.
+
+---
+
+## Released: Extended Markdown formatting for agent messages
+
+*October 8, 2026*
+
+Extended Markdown formatting for agent messages is now generally available to all Teams users. With extended Markdown mode, agents can send richer, more expressive, better-formatted responses than were previously possible in Teams.
+
+Extended Markdown mode enables rendering of Markdown tables, task lists, code blocks, equations, images, at-mentions, and citations in your agent's messages. Additionally, extended Markdown messages render progressively during [streaming](bots/streaming-ux.md), so users see formatted output as it arrives.
+
+For compatibility reasons, extended Markdown mode is not the default, but adopting it is recommended for all messaging scenarios that aren't strictly dependent on the default formatting behavior. Extended Markdown mode is enabled on a per-message basis by setting `textFormat: "extendedmarkdown"` on outgoing message activities.
+
+For more information, including guidance for updating existing agents to use extended Markdown mode, see [Format your agent messages](bots/how-to/format-your-bot-messages.md).
+
+---
+
+## Released: Teams SDK updates (TypeScript, .NET and Python)
+
+*September 28th, 2026*
+
+The release of Teams SDK 2.1 for TypeScript and Python brings together new capabilities for building more connected, context-aware, observable, and extensible agents for Teams. Teams SDK for .NET gets a version bump to 2.1.1 with a few of these new capabilities as well.
+
+### TypeScript and Python: version 2.1.0
+
+- **Build Agentic Users**: Build with agentic identity, lifecycle events, token acquisition, and reactive and proactive messaging helpers.
+- **Compose with Microsoft 365 Agents SDK**: Use the Microsoft 365 Agents SDK to extend existing Teams SDK agents to additional channels without rewriting their Teams-specific capabilities.
+- **Observability for developers**: Use OpenTelemetry spans and metrics to understand activity processing, handler execution, authentication, and outbound Teams API calls.
+- **Authenticate multiple services**: Connect one agent to multiple services, such as Microsoft Graph and GitHub, using independent OAuth flows. The SDK handles connection-aware callbacks and duplicate token exchanges.
+- **Built-in state management**: Create personalized, multistep experiences using conversation and user state that automatically loads and saves with each activity.
+- **Seamless file processing**: Receive and securely process file attachments, including files shared by Agentic Users.
+
+For more information, see the release notes ([TypeScript](https://github.com/microsoft/teams.ts/releases/tag/v2.1.0), [Python](https://github.com/microsoft/teams.py/releases/tag/v2.1.0)) and reference documentation ([TypeScript](/javascript/api/teams-sdk-typescript), [Python](/python/api/msteams-sdk-python)).
+
+### .NET: version 2.1.1
+
+Version 2.1.1 of Teams SDK for .NET ([release notes](https://github.com/microsoft/teams.net/releases/tag/v2.1.1); [reference documentation](/dotnet/teams-sdk-dotnet)) brings the same new Microsoft 365 Agents SDK composability and file-receive API additions, as well as removal of the `Experimental` attribute on APIs related to targeted messages.
+
+---
+
+## Preview: Sessions for Teams agents
+
+*September 24, 2026*
+
+Until now, a user's chat with an agent was one long, ongoing thread. Now in preview, sessions let users and agents split that chat into separate conversations. Each session keeps its own context, so users can juggle multiple projects without them getting mixed up, and your agent's AI responses stay on topic.
+
+With sessions, you can:
+
+- Keep conversations organized. Users can start, switch between, and return to sessions from the chat header.
+- Improve AI responses. Shorter, focused contexts help your agent's LLM generate more relevant answers.
+- Create sessions proactively. Start a session for a notification, ticket, pull request, or approval.
+
+Most agents can benefit from sessions, especially those that help users with long-running, complex work. To enable them for yours, set `"supportsSessions": true` in your app manifest.
+
+For more information, see [Manage multiple user conversations with sessions](bots/how-to/conversations/agent-sessions.md).
 
 ---
 
@@ -47,7 +166,7 @@ Agents can now send richer, better-formatted responses. Set `textFormat: "extend
 
 Extended Markdown content also renders progressively during [streaming](bots/streaming-ux.md), so users see formatted output as it arrives.
 
-For more information, see [Format your agent messages](bots/how-to/format-your-bot-messages.md#set-message-text-format).
+For more information, see [Format your agent messages](bots/how-to/format-your-bot-messages.md).
 
 ---
 
@@ -351,7 +470,7 @@ Support for apps in private channels is available in developer preview. For more
 | 02/02/2024 | Teams, Outlook, and Microsoft 365 web domains are migrating to `*.cloud.microsoft` domain. Configure your app before June 2024 to ensure continued functionality. | Extend your app across Microsoft 365 > Teams tabs in Microsoft 365 and Outlook > [Enable Teams personal tab for Microsoft 365](m365-apps/extend-m365-teams-personal-tab.md#configure-content-security-policy-headers) |
 | 02/02/2024 | The Collaboration controls for model-driven applications **are** set to retire by May 2024. We recommend removing the Collaboration controls and Collaboration connector from all Power Apps solutions and prepare users for the upcoming Collaboration controls retirement. | |
 | 01/02/2024 | Use Adaptive Card-based Loop components to build collaborative experiences within Teams message extensions that work across Microsoft 365. | Extend your app across Microsoft 365 > [Adaptive Card-based Loop components](m365-apps/cards-loop-component.md) |
-| 01/02/2024 | Use application RSC permissions for chat scope. | Utilize Teams data with Microsoft Graph > Resource-specific consent > [RSC permissions for a chat or meeting](graph-api/rsc/resource-specific-consent.md#rsc-permissions-for-a-chat-or-meeting) |
+| 01/02/2024 | Use application RSC permissions for chat scope. | Utilize Teams data with Microsoft Graph > Resource-specific consent > [RSC permissions for a chat or meeting](graph-api/rsc/resource-specific-consent.md#rsc-permissions-for-chats-and-meetings) |
 | 25/01/2024 | Use Micro-capability templates to show rich unfurl previews of your links without installing your app in Microsoft Teams. | Build message extension > Build message extensions using Bot Framework > [Micro-capabilities for website links](messaging-extensions/how-to/micro-capabilities-for-website-links.md) |
 | 24/01/2024 | Introduced advanced step-by-step guide to learn how to debug your AI chat bot using Teams App Test Tool. | [Debug your AI chat bot using Teams App Test Tool](toolkit/teams-app-test-tool-tutorial.md) |
 | 19/01/2024 | Use / to invoke message extensions from command box in the new Teams client. | Build message extension > [Build message extensions using Bot Framework](messaging-extensions/build-bot-based-message-extension.md) |
@@ -367,7 +486,7 @@ Support for apps in private channels is available in developer preview. For more
 | **Date** | **Update** | **Find here** |
 | -------- | ---------- | -------------- |
 | 20/12/2023 | Incoming Webhooks are available in GCC High environment. | [Build webhooks and connectors](~/webhooks-and-connectors/what-are-webhooks-and-connectors.md) |
-| 20/12/2023 | Introduced RSC permissions for users to access different resources. | Utilize Teams data with Microsoft Graph > [Resource-specific consent for your Teams app](graph-api/rsc/resource-specific-consent.md#rsc-permissions-for-user-access) |
+| 20/12/2023 | Introduced RSC permissions for users to access different resources. | Utilize Teams data with Microsoft Graph > [Resource-specific consent for your Teams app](graph-api/rsc/resource-specific-consent.md#rsc-permissions-for-users-personal-scope) |
 | 18/12/2023 | App caching in chat, channel, and meeting tab scopes is available for iOS. | Build tabs > [App caching for your tab app](tabs/how-to/app-caching.md) |
 | 15/12/2023 | Bots can mention tags in text messages and Adaptive Cards posted in Teams channels. | Build bots > Bot conversation > [Channel and group chat conversations with a bot](bots/how-to/conversations/channel-and-group-conversations.md#tag-mention) |
 | 12/12/2023 | Use Teams AI library to build apps that can leverage LLMs to facilitate more natural conversational interactions with users, guiding that conversation into your apps skills. | Build bots > [Teams AI library](bots/how-to/teams-conversational-ai/teams-conversation-ai-overview.md) |
@@ -425,7 +544,7 @@ Support for apps in private channels is available in developer preview. For more
 | 20/03/2023 | Bots are available in Department of Defense (DoD) environment. | Build bots > [Overview](bots/what-are-bots.md) |
 | 20/03/2023 | Message extensions are available in Department of Defense (DoD) environment. | Build message extensions > [Overview](messaging-extensions/what-are-messaging-extensions.md) |
 | 28/02/2023 | Use the resources and best practices to support the rollout of your Teams app in your customers' organizations and facilitate adoption of your app. | Publish your app > adoption > [Drive customer adoption of your app](promote-app-adoption.md) |
-| 27/02/2023 | Use Changelog to view the latest updates on Developer Portal about features, recent changes in APIs, and important bug fixes. | Tools and SDKs > Developer Portal for Teams > [Overview](concepts/build-and-test/teams-developer-portal.md#changelog-for-developer-portal) |
+| 27/02/2023 | Use Changelog to view the latest updates on Developer Portal about features, recent changes in APIs, and important bug fixes. | Tools and SDKs > Developer Portal for Teams > [Overview](concepts/build-and-test/teams-developer-portal.md) |
 | 23/02/2023 | Enable single sign-on (SSO) authentication to access Adaptive Cards Universal Actions in a bot. | Add authentication > Enable SSO for your Teams app > Enable SSO for Adaptive Cards Universal Actions in your bot > [Overview](task-modules-and-cards/cards/Universal-actions-for-adaptive-cards/enable-sso-for-your-adaptive-cards-universal-action.md) |
 | 23/02/2023 | Enable third party authentication to add user-specific views in instances where an Adaptive Card with Universal Action is shared. | Add authentication > Use third party IdP authentication > [Third party authentication for Adaptive Cards Universal Actions](task-modules-and-cards/cards/Universal-actions-for-adaptive-cards/authentication-flow-in-universal-action-for-adaptive-cards.md) |
 | 21/02/2023 | Send notifications to specific participants on a meeting stage with targeted in-meeting notification. | Build apps for Teams meetings and calls > Enable and configure apps for Teams meeting > [Targeted in-meeting notification for apps in Teams](apps-in-teams-meetings/in-meeting-notification-for-meeting.md#targeted-in-meeting-notification) |
@@ -455,7 +574,7 @@ Support for apps in private channels is available in developer preview. For more
 | 17/11/2022 | Updated Manifest schema v1.15. | App manifest > [Manifest schema v1.15](/microsoft-365/extensibility/schema/#all-generally-available-versions) |
 | 16/11/2022 | Introducing Adaptive Cards overflow menu. | Build cards and task modules > Build cards > Format cards in Microsoft Teams > [Adaptive Cards overflow menu](task-modules-and-cards/cards/cards-format.md#adaptive-cards-overflow-menu) |
 | 14/11/2022 | Introducing single sign-on for Visual Studio. | Tools and SDKs > Teams Toolkit > Use Teams Toolkit to create your app > Develop your Teams app > [Add single sign-on to your Teams app](toolkit/add-single-sign-on.md) |
-| 10/11/2022 | Enable bots to receive all conversation messages without being @mentioned in relevant contexts (developer preview). | Build bots > Bot conversations > Message in bot conversations > [Receive all conversation messages with RSC](bots/how-to/conversations/channel-messages-for-bots-and-agents.md) |
+| 10/11/2022 | Enable bots to receive all conversation messages without being @mentioned in relevant contexts (developer preview). | Build bots > Bot conversations > Message in bot conversations > [Receive all conversation messages with RSC](agents-in-teams/enable-receive-all-chat-messages.md) |
 | 02/11/2022 | Support global routing for bot APIs. | Build bots > Bot conversations > Proactive messages > [Create the conversation](bots/how-to/conversations/send-proactive-messages.md#create-the-conversation) |
 | 27/10/2022 | Introducing Workflow bot for Teams. | Tools and SDKs > Teams Toolkit > Use Teams Toolkit to create your app > Develop your Teams app > Create multi capability app > [Create Teams workflow bot](sbs-gs-workflow-bot.yml) |
 | 26/10/2022 | Build an in-meeting app for enabling meeting participants to sign documents in real time. | Build apps for Teams meetings and calls > Enable and configure apps for Teams meetings > [Build apps for Teams meeting stage](apps-in-teams-meetings/build-apps-for-teams-meeting-stage.md#build-an-in-meeting-document-signing-app) |
@@ -482,7 +601,7 @@ Support for apps in private channels is available in developer preview. For more
 | 28/07/2022 | Introduced app manifest v1.14. | App manifest > [App manifest schema for Teams](/microsoft-365/extensibility/schema/#all-generally-available-versions) |
 | 26/07/2022 | Suggested actions for bots. | Build bots > Bot conversations > [Messages in bot conversations](bots/how-to/conversations/conversation-messages.md#send-suggested-actions) |
 | 21/07/2022 | Introduced step by step guide to send activity feed notifications. | Design your app > UI components> Activity feed notifications > [Send activity feed notification](sbs-graphactivity-feedbroadcast.yml) |
-| 08/07/2022 | Updates to send channel ID selected by user during app installation to bots via conversation and installation update events. | Build bots > Bot conversations > Conversation events in your Teams bot > [Conversation events in your Teams bot](bots/how-to/conversations/subscribe-to-conversation-events.md) |
+| 08/07/2022 | Updates to send channel ID selected by user during app installation to bots via conversation and installation update events. | Build bots > Bot conversations > Conversation events in your Teams bot > [Conversation events in your Teams bot](bots/agent-activity-handler-reference.md#install-update-event) |
 | 16/06/2022 | Updated media capabilities to support desktop and mobile. | Integrate device capabilities > [Integrate media capabilities](concepts/device-capabilities/media-capabilities.md) |
 | 08/06/2022 | Server handlers for card actions. | Build cards and task modules > Build cards > [Server handlers](task-modules-and-cards/cards/cards-actions.md#server-handlers) |
 | 03/06/2022 | Updated Add authentication module for enabling SSO for tab app with new structure and procedures. | Add authentication > Tabs > [Enable single sign-on in a tab app](tabs/how-to/authentication/tab-sso-overview.md) |
@@ -493,7 +612,7 @@ Support for apps in private channels is available in developer preview. For more
 | 24/05/2022 | Bots and Message extensions in GCC and GCCH. | • Plan your app > [Overview](concepts/cloud-overview.md#teams-app-capabilities) </br> • Build bots > [Overview](bots/what-are-bots.md) </br> • Build message extensions > [Overview](messaging-extensions/what-are-messaging-extensions.md) |
 | 24/05/2022 | Use Live Share to transform Teams apps into collaborative multi-user experiences without writing any dedicated back-end code (developer preview). | Build apps for Teams meetings > Enhanced collaboration with Live Share > [Overview](apps-in-teams-meetings/teams-live-share-overview.md) |
 | 28/04/2022 | Common reasons for app validation failure. | Publish your app > Publish to the Teams Store > [Common reasons for app validation failure](concepts/deploy-and-publish/appsource/common-reasons-for-app-validation-failure.md) |
-| 26/04/2022 | Uninstall behavior for personal app with bot. | Build bots > Bot conversations > [Uninstall behavior updates in personal apps with bots](bots/how-to/conversations/subscribe-to-conversation-events.md#uninstall-behavior-for-personal-app-with-agent) |
+| 26/04/2022 | Uninstall behavior for personal app with bot. | Build bots > Bot conversations > [Uninstall behavior updates in personal apps with bots](bots/agent-activity-handler-reference.md#uninstall-behavior-for-personal-app-with-agent) |
 | 22/04/2022 | Test preview for monetized apps. | Monetize your app > [Test preview for monetized apps](concepts/deploy-and-publish/appsource/prepare/test-preview-for-monetized-apps.md) |
 | 22/04/2022 | In-app purchase flow for monetization of apps. | Monetize your app > [In-app purchases](concepts/deploy-and-publish/appsource/prepare/in-app-purchase-flow.md) |
 | 20/04/2022 | Set up CI/CD pipelines. | Tools and SDKs > Teams Toolkit for Visual Studio Code > [Set up CI/CD pipelines](toolkit/use-CICD-template.md) |
@@ -561,7 +680,7 @@ For more information, see [public developer preview for Teams](~/resources/dev-p
 | 09/21/2021 | Teams supports Microsoft Entra Object ID and UPN in user mention for bots and Incoming Webhooks. | • Build cards and task modules > Build cards > [Microsoft Entra Object ID and UPN in user mention](task-modules-and-cards/what-are-cards.md#support-for-azure-ad-object-id-and-upn-in-user-mention) </br> • Build cards and task modules > Build cards > [Cards- Overview](task-modules-and-cards/cards/cards-format.md#format-cards-with-markdown) |
 | 08/30/2021 | Custom Together Mode scenes feature combines participants into a single virtual scene and places their video streams in pre-determined seats. | Build apps for Teams meetings > Custom Together Mode scenes |
 | 08/25/2021 | Introduced step-by-step guide to create a Teams bot with Single sign-on (SSO). | Add authentication > Bots > [Step-by-step guide to create Teams bot with SSO](sbs-bots-with-sso.yml) |
-| 08/19/2021 | Installation update event received when you install a bot to a conversation thread. | Build bots > Bot conversations > [Installation update event](bots/how-to/conversations/subscribe-to-conversation-events.md#installation-update-event) |
+| 08/19/2021 | Installation update event received when you install a bot to a conversation thread. | Build bots > Bot conversations > [Installation update event](bots/agent-activity-handler-reference.md#installation-update-event-details) |
 | 08/16/2021 | Support for input validation on Adaptive Cards (v1.3 for all capabilities) and Universal Actions (v1.4 for bot sent cards). | • Adaptive Cards > Authoring cards > [Input validation](/adaptive-cards/authoring-cards/input-validation) </br> • Build cards and task modules > Build cards > Universal actions for Adaptive Cards > [Universal Actions for Adaptive Cards v1.4](task-modules-and-cards/cards/universal-actions-for-adaptive-cards/overview.md) |
 | 08/12/2021 | Build tabs with Adaptive Cards. | Build tabs > [Build tabs with Adaptive Cards](tabs/how-to/build-adaptive-card-tabs.md) |
 | 07/08/2021 | Teams mobile adds support for apps in meetings. | Build apps for Teams meetings > [Build apps for Teams meeting](apps-in-teams-meetings/build-apps-for-teams-meeting-stage.md) |
