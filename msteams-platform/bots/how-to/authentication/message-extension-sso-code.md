@@ -3,7 +3,7 @@ title: Enable message extension SSO with Teams SDK
 description: Add single sign-on to a bot-based message extension with Teams SDK. Learn how the SSO flow works, configure your app, handle search and link-unfurling invokes, validate tokens, and sign users out in TypeScript, C#, and Python.
 ms.topic: how-to
 ms.localizationpriority: high
-ms.date: 11/26/2026
+ms.date: 11/27/2026
 zone_pivot_groups: teams-sdk-languages
 ---
 
@@ -135,6 +135,8 @@ Don't use the conversational `signIn`, `SignInAsync`, or `sign_in` helpers in a 
 
 When no token is available, return a `silentAuth` response. The sign-in link comes from the token service for your OAuth connection and is used only if silent SSO fails.
 
+Teams uses the response to present the sign-in action in your message extension when interactive sign-in is required. You don't need to create a separate sign-in button or send an OAuth card to a bot conversation.
+
 ```json
 {
   "composeExtension": {
@@ -151,6 +153,16 @@ When no token is available, return a `silentAuth` response. The sign-in link com
   }
 }
 ```
+
+* `type` requests silent SSO before interactive sign-in. Set it to `silentAuth` for the Microsoft Entra SSO flow.
+* `title` labels the action users select to authenticate. Set it to `Sign in` to make the action clear.
+* `value` provides the URL for the sign-in dialog. Set it to the sign-in link returned by the token service for your OAuth connection.
+
+Users see the following experience:
+
+1. Teams attempts silent SSO. If it succeeds, your extension returns the requested results without showing a sign-in action.
+1. If interactive sign-in is required, Teams presents the **Sign in** action in your message extension. When the user selects it, Teams opens a sign-in dialog using the URL in `value`.
+1. The user signs in and grants consent if required. Teams then retries the original request, and your handler completes authentication before returning the search results or link preview.
 
 ### Retried request with the SSO token
 
